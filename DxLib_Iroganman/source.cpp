@@ -1,11 +1,10 @@
 #include "DxLib.h"
 #include <math.h>
 #include "resource1.h"
-#include <time.h>
 
 
 #define GAME_WIDTH			960
-#define GAME_HEIGHT			540
+#define GAME_HEIGHT			640
 #define GAME_COLOR			32	
 
 #define GAME_HANKEI			200
@@ -25,39 +24,70 @@
 
 #define IMAGE_LOAD_ERR_TITLE	TEXT("画像読み込みエラー")
 
-#define IMAGE_BACK_PATH			TEXT(".\\IMAGE\\playback.png")
-#define IMAGE_ENDBACK_PATH		TEXT(".\\IMAGE\\OIPNODBZ5LM.png")
+#define IMAGE_BACK_PATH			TEXT(".\\IMAGE\\utyu.png")
+#define IMAGE_BACK_REV_PATH	TEXT(".\\IMAGE\\utyu.png")
+#define IMAGE_BACK_NUM	4
 
+#define IMAGE_BACK1_PATH		TEXT(".\\IMAGE\\utyu.png")
+
+
+
+#define IMAGE_ENDBACK_PATH		TEXT(".\\IMAGE\\OIPNODBZ5LM.png")
 
 #define IMAGE_PLAYER_PATH		TEXT(".\\IMAGE\\player.png")	
 
 
-
-#define IMAGE_ENEMY_PATH		TEXT(".\\IMAGE\\pipo-enemy024b.png")	
+//敵
+#define IMAGE_ENEMY_PATH		TEXT(".\\IMAGE\\hitome_red.png")	
 #define IMAGE_ENEMY2_PATH		TEXT(".\\IMAGE\\enemy2.png")
 #define IMAGE_ENEMY3_PATH		TEXT(".\\IMAGE\\pipo-enemy025a.png")
 #define IMAGE_ENEMY4_PATH		TEXT(".\\IMAGE\\pipo-enemy040b.png")
 #define IMAGE_ENEMY5_PATH		TEXT(".\\IMAGE\\pipo-enemy039.png")
+
+#define IMAGE_syokusyu_PATH		TEXT(".\\IMAGE\\MAP2\\shokushu.png")
+#define SHOKUSHU_NUM			5
+
+
+//ハート
 #define IMAGE_HEART_PATH		TEXT(".\\IMAGE\\heart_red.png")
-#define IMAGE_ENEMY_NUM			5
-
-
 #define HEART_NUM				3
+
+
+//ギミック
+#define IMAGE_WARP_PATH			TEXT(".\\IMAGE\\warp.png")
+
+#define IMAGE_HUKIDASI_PATH		TEXT(".\\IMAGE\\吹き出し.png")
+#define IMAGE_HUKIDASI2_PATH		TEXT(".\\IMAGE\\吹き出し２.png")
+#define IMAGE_HUKIDASI3_PATH		TEXT(".\\IMAGE\\MAP2\\window2.png")
+
+
+#define IMAGE_DENGER_TATE_PATH		TEXT(".\\IMAGE\\MAP2\\denger.tate.png")
+#define IMAGE_DENGER_YOKO_PATH		TEXT(".\\IMAGE\\MAP2\\denger.yoko.png")
+#define DENGER_TATE_NUM				5
+#define DENGER_YOKO_NUM				5
+
+#define IMAGE_SAFE_TATE_PATH			TEXT(".\\IMAGE\\MAP2\\safe.tate.png")
+#define IMAGE_SAFE_YOKO_PATH			TEXT(".\\IMAGE\\MAP2\\safe.yoko.png")
+#define SAFE_TATE_NUM				5
+#define SAFE_YOKO_NUM				5
+
+
+
 
 
 #define IMAGE_GOAL_PATH			TEXT(".\\IMAGE\\takara.png")
 
-#define IMAGE_GATE_PATH			TEXT(".\\IMAGE\\gate.png")
 
 
-#define IMAGE_TITLE_BK_PATH		TEXT(".\\IMAGE\\titleback.png")
+
+#define IMAGE_TITLE_BK_PATH		TEXT(".\\IMAGE\\pipo-battlebg020.png")
 #define IMAGE_TITLE_ROGO_PATH	TEXT(".\\IMAGE\\titlerogo.png")
 #define IMAGE_TITLE_ROGO_ROTA	0.005
 #define IMAGE_TITLE_ROGO_ROTA_MAX	1.0
 #define IMAGE_TITLE_ROGO_X_SPEED	1
 #define IMAGE_TITLE_START_PATH	TEXT(".\\IMAGE\\title_start.png")
 #define IMAGE_TITLE_START_CNT	1
-#define IMAGE_TITLE_START_CNT_MAX	60
+#define IMAGE_TITLE_START_CNT_MAX	30
 
 
 #define IMAGE_END_COMP_PATH		TEXT(".\\IMAGE\\mission_complete.png")
@@ -73,8 +103,6 @@
 
 
 
-#define IMAGE_BACK_REV_PATH	TEXT(".\\IMAGE\\grass2.png")
-#define IMAGE_BACK_NUM	4
 
 
 #define TAMA_CHANGE_MAX 5
@@ -98,7 +126,7 @@
 
 
 #define MUSIC_BGM_PATH			TEXT(".\\MUSIC\\game_maoudamashii_1_battle36.mp3")
-#define MUSIC_STARTBGM_PATH		TEXT(".\\MUSIC\\game_maoudamashii_6_dangeon15.mp3")
+#define MUSIC_STARTBGM_PATH		TEXT(".\\MUSIC\\game_maoudamashii_5_town18.mp3")
 #define MUSIC_ENDBGM_PATH		TEXT(".\\MUSIC\\game_maoudamashii_7_event37.mp3")
 #define MUSIC_PLAYER_SHOT_PATH	TEXT(".\\MUSIC\\se_maoudamashii_explosion06.mp3")
 #define MUSIC_GREEN_SHOT_PATH	TEXT(".\\MUSIC\\se_zuzaan.mp3")
@@ -113,7 +141,7 @@
 #define MUSIC_GEKIHA_PATH		TEXT(".\\MUSIC\\monster5.mp3")
 
 
-#define GAME_MAP_TATE_MAX 9
+#define GAME_MAP_TATE_MAX 10
 #define GAME_MAP_YOKO_MAX 15
 #define GEME_MAP_KIND_MAX 2
 
@@ -123,6 +151,19 @@
 #define MAP_DIV_HEIGHT	64
 #define MAP_DIV_TATE	10
 #define MAP_DIV_YOKO	4
+
+
+//#define GAME_MAP_TATE_MAX 20
+//#define GAME_MAP_YOKO_MAX 32
+//#define GEME_MAP_KIND_MAX 2
+//
+//#define GAME_MAP_PATH	TEXT(".\\IMAGE\\MAP\\mapchip1.png")
+//
+//#define MAP_DIV_WIDTH	32
+//#define MAP_DIV_HEIGHT	32
+//#define MAP_DIV_TATE	32
+//#define MAP_DIV_YOKO	41
+//
 #define MAP_DIV_NUM MAP_DIV_TATE * MAP_DIV_YOKO
 
 
@@ -155,6 +196,9 @@
 
 #define MOUSE_R_CLICK_TITLE	TEXT("ゲーム中断")
 #define MOUSE_R_CLICK_CAPTION	TEXT("ゲームを中断し、タイトル画面に戻りますか？")
+
+
+
 
 
 
@@ -240,11 +284,13 @@ typedef struct STRUCT_ENEMY
 	int speed;
 	double radian;
 
-
 	/*int CenterX;
 	int CenterY;*/
 	//RECT coll;	//当たり判定
 }ENEMY;
+
+
+
 
 
 typedef struct STRUCT_MUSIC
@@ -280,6 +326,7 @@ typedef struct STRUCT_TAMA
 typedef struct STRUCT_CHARA
 {
 	IMAGE image;
+	BOOL IsDraw;
 	int speed;
 	int CenterX;
 	int CenterY;
@@ -299,6 +346,9 @@ typedef struct STRUCT_CHARA
 
 	RECT coll;
 	iPOINT collBeforePt;
+
+	BOOL IsMuteki;
+	BOOL Ishit = FALSE;
 
 
 }CHARA;
@@ -352,7 +402,7 @@ typedef struct STRUCT_MAP
 }MAP;
 
 
-
+//追加
 typedef struct STRUCT_MAP2_IMAGE
 {
 	char path[PATH_MAX];
@@ -371,7 +421,7 @@ typedef struct STRUCT_MAP2
 	int height;
 
 }MAP2;
-
+//追加ここまで
 
 
 
@@ -390,10 +440,25 @@ int GameScene;
 
 
 int GameEndKind;
+
+
+int enemycount;
+int mutekicount = 0.0;
+int map1count = 0.0;
+int warphandle[10];
+
+
+
+int heartnow = 2;
+
+
+
 RECT GoalRect = { -1,-1,-1,-1 };
 
 
-IMAGE ImageBack;
+IMAGE_BACK ImageBack[IMAGE_BACK_NUM];
+
+IMAGE back1;
 IMAGE STARTBACK;
 IMAGE endback;
 
@@ -411,10 +476,22 @@ ENEMY enemy3;
 ENEMY enemy4;
 ENEMY enemy5;
 
+IMAGE syokusyu[SHOKUSHU_NUM];
+
 IMAGE heart[HEART_NUM];
+
+IMAGE denger_tate[DENGER_TATE_NUM];
+IMAGE denger_yoko[DENGER_YOKO_NUM];
+
+IMAGE safe_tate[SAFE_TATE_NUM];
+IMAGE safe_yoko[SAFE_YOKO_NUM];
 
 IMAGE gategazou;
 IMAGE goalgazou;
+IMAGE warp;
+IMAGE hukidasi;
+IMAGE hukidasi2;
+IMAGE hukidasi3;
 
 TAMA tama;
 
@@ -437,14 +514,16 @@ MUSIC gekiha;
 
 GAME_MAP_KIND mapData[GAME_MAP_TATE_MAX][GAME_MAP_YOKO_MAX]{
 	k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,
-	k,t,t,t,t,k,t,t,t,t,t,t,t,t,k,
-	k,t,k,k,t,k,t,t,k,k,k,k,t,t,k,
-	k,t,k,t,t,k,t,t,t,k,t,t,t,t,k,
-	k,t,k,t,k,k,k,k,t,k,t,t,t,t,k,
-	k,t,k,t,k,t,t,t,t,k,t,t,k,k,k,
-	k,t,k,k,k,t,k,k,k,k,t,t,t,t,k,
-	k,t,t,t,t,t,k,k,k,k,t,t,t,t,k,
-	k,k,k,k,k,k,k,k,k,k,k,k,k,s,k
+	k,t,t,t,t,t,t,t,t,t,t,t,t,t,k,
+	k,t,k,k,k,t,t,t,t,k,k,k,t,t,k,
+	t,t,k,t,t,k,t,t,t,k,t,k,t,t,k,
+	k,t,t,t,k,k,k,s,t,k,t,t,t,t,k,
+	k,k,k,k,k,k,k,t,t,k,k,k,k,k,k,
+	k,t,t,t,t,t,t,t,t,t,k,t,t,t,k,
+	k,t,t,k,k,k,k,k,k,k,k,t,t,t,k,
+	k,t,t,t,t,t,t,t,t,t,t,t,t,t,k,
+	k,k,k,k,k,k,k,k,k,k,k,k,t,k,k
+
 };
 
 GAME_MAP_KIND mapDataInit[GAME_MAP_TATE_MAX][GAME_MAP_YOKO_MAX];
@@ -461,16 +540,16 @@ RECT mapColl[GAME_MAP_TATE_MAX][GAME_MAP_YOKO_MAX];
 
 
 
-
+//追加
 GAME_MAP_KIND mapData2[GAME_MAP2_TATE_MAX][GAME_MAP2_YOKO_MAX]{
 	k,k,k,k,k,k,k,k,k,k,k,k,k,k,k,
 	k,t,t,t,t,k,t,t,t,t,t,t,t,t,k,
-	k,t,k,k,t,k,t,t,k,t,k,k,t,t,k,
-	s,t,k,t,t,k,t,t,t,t,t,t,t,t,k,
-	k,t,k,t,k,k,k,k,t,t,t,t,t,t,k,
-	k,t,k,t,k,t,t,t,t,t,t,t,k,k,k,
-	k,t,k,k,k,t,k,k,k,t,t,t,t,t,k,
-	k,t,t,t,t,t,k,k,k,t,t,t,t,t,k,
+	k,t,t,t,t,k,t,t,k,t,k,k,t,t,k,
+	s,t,t,t,t,k,t,t,t,t,t,t,t,t,k,
+	k,t,t,t,t,k,k,k,t,t,t,t,t,t,k,
+	k,t,t,t,t,t,t,t,t,t,t,t,k,k,k,
+	k,t,t,t,t,t,t,t,k,t,t,t,t,t,k,
+	k,t,t,t,t,t,t,t,k,t,t,t,t,t,k,
 	k,k,k,k,k,k,k,k,k,t,k,k,k,k,k
 };
 
@@ -483,8 +562,8 @@ MAP2 map2[GAME_MAP2_TATE_MAX][GAME_MAP2_YOKO_MAX];
 iPOINT startPt2{ -1,-1 };
 
 
-RECT mapColl[GAME_MAP2_TATE_MAX][GAME_MAP2_YOKO_MAX];
-
+//RECT mapColl[GAME_MAP2_TATE_MAX][GAME_MAP2_YOKO_MAX];
+//追加ここまで
 
 
 
@@ -531,6 +610,7 @@ BOOL MY_CHECK_RECT_COLL(RECT, RECT);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 {
+	
 
 	ChangeWindowMode(TRUE);
 	SetGraphMode(GAME_WIDTH, GAME_HEIGHT, GAME_COLOR);
@@ -545,6 +625,9 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	if (MY_LOAD_IMAGE() == FALSE) { return -1; }
 	if (MY_LOAD_MUSIC() == FALSE) { return -1; }
+
+
+	
 
 	player.CanShot = TRUE;
 	player.ShotReLoadCnt = 0;
@@ -587,8 +670,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		{
 			if (mapData2[tate][yoko] == s)
 			{
-				startPt.x = mapChip2.width * yoko + mapChip2.width / 2;
-				startPt.y = mapChip2.height * tate + mapChip2.height / 2;
+				startPt2.x = mapChip2.width * yoko + mapChip2.width / 2;
+				startPt2.y = mapChip2.height * tate + mapChip2.height / 2;
 			}
 
 		}
@@ -623,6 +706,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	while (TRUE)
 	{
+
 		if (ProcessMessage() != 0) { break; }
 		if (ClearDrawScreen() != 0) { break; }
 
@@ -936,6 +1020,7 @@ VOID MY_START_PROC(VOID)
 		if (ImageTitleSTART.Cnt < ImageTitleSTART.CntMAX)
 		{
 			ImageTitleSTART.Cnt += IMAGE_TITLE_START_CNT;
+			
 		}
 		else
 		{
@@ -947,6 +1032,7 @@ VOID MY_START_PROC(VOID)
 			{
 				ImageTitleSTART.IsDraw = FALSE;
 			}
+
 			ImageTitleSTART.Cnt = 0;
 		}
 	}
@@ -974,6 +1060,9 @@ VOID MY_START_DRAW(VOID)
 	return;
 }
 
+
+
+//マップ１
 VOID MY_PLAY(VOID)
 {
 	MY_PLAY_PROC();
@@ -986,6 +1075,14 @@ VOID MY_PLAY(VOID)
 VOID MY_PLAY_PROC(VOID)
 {
 
+	/*map1count++;
+
+	int a = map1count % 40 / 10;
+
+	if (a == 10)
+	{
+		a = 0;
+	}*/
 
 
 	if (CheckSoundMem(BGM.handle) == 0)
@@ -1139,13 +1236,13 @@ VOID MY_PLAY_PROC(VOID)
 
 
 	RECT GateRect;
-	GateRect.left = gategazou.x;
-	GateRect.top = gategazou.y;
-	GateRect.right = gategazou.x + gategazou.width;
-	GateRect.bottom = gategazou.y + gategazou.height;
+	GateRect.left = warp.x;
+	GateRect.top = warp.y;
+	GateRect.right = warp.x + warp.width;
+	GateRect.bottom = warp.y + warp.height;
 
 
-
+	
 
 	//ゴールの接触チェック
 	/*if (MY_CHECK_RECT_COLL(PlayerRect, GoalRect) == TRUE)
@@ -1171,16 +1268,77 @@ VOID MY_PLAY_PROC(VOID)
 
 	if (MY_CHECK_RECT_COLL(PlayerRect, GateRect) == TRUE)
 	{
-		player.CenterX = startPt.x;
-		player.CenterY = startPt.y;
+		hukidasi.IsDraw = TRUE;
 
-		player.image.x = player.CenterX;
-		player.image.y = player.CenterY;
 
-		GameScene = GAME_SCENE_PLAY2;
+		//閉まった扉を調べる
+		if (MY_KEY_DOWN(KEY_INPUT_SPACE) == TRUE)
+		{
+			hukidasi2.IsDraw = TRUE;
 
-		return;
+		}
+		else if (hukidasi2.IsDraw == TRUE)
+		{
+			if (MY_KEY_DOWN(KEY_INPUT_RETURN) == TRUE)
+			{
+				hukidasi2.IsDraw = FALSE;
+			}
+		}
+
+		if (MY_KEY_DOWN(KEY_INPUT_ESCAPE) == TRUE)
+		{
+			player.CenterX = 700;
+			player.CenterY = 300;
+
+			player.image.x = player.CenterX;
+			player.image.y = player.CenterY;
+
+			for (int i = 0; i < SHOKUSHU_NUM; i++)
+			{
+				syokusyu[i] = syokusyu[0];
+
+				syokusyu[0].x = 900;
+				syokusyu[0].y = 400;
+
+				syokusyu[1].x = 900;
+				syokusyu[1].y = 100;
+
+			}
+
+			for (int i = 0; i < DENGER_YOKO_NUM; i++)
+			{
+				denger_yoko[i] = denger_yoko[0];
+
+				denger_yoko[0].x = 0;
+				denger_yoko[0].y = 400;
+
+				denger_yoko[1].x = 0;
+				denger_yoko[1].y = 100;
+
+			}
+
+			GameScene = GAME_SCENE_PLAY2;
+
+			return;
+		}
+		
 	}
+
+
+	else {
+		hukidasi.IsDraw = FALSE;
+	}
+
+
+	if (hukidasi2.IsDraw == TRUE)
+	{
+		if (MY_KEY_DOWN(KEY_INPUT_RETURN) == TRUE)
+		{
+			hukidasi2.IsDraw = FALSE;
+		}
+	}
+
+
 
 
 	//敵1の接触チェック
@@ -1188,28 +1346,16 @@ VOID MY_PLAY_PROC(VOID)
 
 	if (MY_CHECK_RECT_COLL(PlayerRect, EnemyRect) == TRUE)
 	{	
+		player.IsMuteki = TRUE;
 
 		for (int i = 0; i < HEART_NUM; i++)
 		{
 			heart[i].IsDraw = FALSE;
 
-			return;
 		}
 		
 	}
 
-	/*for (int i = 0; i < HEART_NUM; i++)
-	{
-		if (heart[i].IsDraw == TRUE)
-		{
-			if (MY_CHECK_RECT_COLL(PlayerRect, EnemyRect) == TRUE)
-			{
-				heart[i].IsDraw = FALSE;
-
-			}
-			break;
-		}
-	}*/
 
 	////敵２の接触チェック
 	//if (MY_CHECK_RECT_COLL(PlayerRect, Enemy2Rect) == TRUE)
@@ -1308,7 +1454,7 @@ VOID MY_PLAY_PROC(VOID)
 
 		SetMouseDispFlag(TRUE);
 
-		GameEndKind = GAME_END_COMP;
+		GameEndKind = GAME_END_FAIL;
 
 		GameScene = GAME_SCENE_END;
 
@@ -1316,14 +1462,12 @@ VOID MY_PLAY_PROC(VOID)
 	}
 
 
-	//赤弾を発射
+	//左に赤弾を発射
 	if (MY_KEY_DOWN(KEY_INPUT_1) == TRUE)
 	{
 		if (player.CanShot == TRUE)
 		{
 			PlaySoundMem(player.musicShot.handle, DX_PLAYTYPE_BACK);
-			PlaySoundMem(voice_ei.handle, DX_PLAYTYPE_BACK);
-			ChangeVolumeSoundMem(255 * 150 / 100, voice_ei.handle);
 			player.CanShot = FALSE;
 
 
@@ -1331,9 +1475,9 @@ VOID MY_PLAY_PROC(VOID)
 			{
 				if (player.tama[cnt].IsDraw == FALSE)
 				{
-					player.tama[cnt].x = player.CenterX - player.tama[cnt].width / 2;
+					player.tama[cnt].y = player.CenterY - player.tama[cnt].height / 2;
 
-					player.tama[cnt].y = player.image.y;
+					player.tama[cnt].x = player.image.x;
 
 					player.tama[cnt].IsDraw = TRUE;
 
@@ -1346,14 +1490,12 @@ VOID MY_PLAY_PROC(VOID)
 
 
 
-	//緑弾を発射
+	//左に緑弾を発射
 	if (MY_KEY_DOWN(KEY_INPUT_2) == TRUE)
 	{
 		if (player.CanShot == TRUE)
 		{
 			PlaySoundMem(player.greenshot.handle, DX_PLAYTYPE_BACK);
-			PlaySoundMem(voice_make.handle, DX_PLAYTYPE_BACK);
-			ChangeVolumeSoundMem(255 * 150 / 100, voice_ei.handle);
 			player.CanShot = FALSE;
 
 
@@ -1377,30 +1519,32 @@ VOID MY_PLAY_PROC(VOID)
 	}
 
 
-	////敵１と赤弾の当たり判定
-	//for (int cnt = 0; cnt < TAMA_MAX; cnt++)
-	//{
+	//敵１と赤弾の当たり判定
+	for (int cnt = 0; cnt < TAMA_MAX; cnt++)
+	{
 
-	//	if (((player.tama[cnt].x > enemy.image.x && player.tama[cnt].x < enemy.image.x + enemy.image.width) ||
-	//		(enemy.image.x > player.tama[cnt].x && enemy.image.x < player.tama[cnt].x + player.tama[cnt].width)) &&
-	//		((player.tama[cnt].y > enemy.image.y && player.tama[cnt].y < enemy.image.y + enemy.image.height) ||
-	//			(enemy.image.y > player.tama[cnt].y && enemy.image.y < player.tama[cnt].y + player.tama[cnt].height)))
-	//	{
+		if (((player.tama[cnt].x > enemy.image.x && player.tama[cnt].x < enemy.image.x + enemy.image.width) ||
+			(enemy.image.x > player.tama[cnt].x && enemy.image.x < player.tama[cnt].x + player.tama[cnt].width)) &&
+			((player.tama[cnt].y > enemy.image.y && player.tama[cnt].y < enemy.image.y + enemy.image.height) ||
+				(enemy.image.y > player.tama[cnt].y && enemy.image.y < player.tama[cnt].y + player.tama[cnt].height)))
+		{
 
-	//		player.tama[cnt].IsDraw = FALSE;
+			player.tama[cnt].IsDraw = FALSE;
 
-	//		PlaySoundMem(gekiha.handle, DX_PLAYTYPE_BACK);
+			PlaySoundMem(gekiha.handle, DX_PLAYTYPE_BACK);
 
-	//		enemy.image.handle = FALSE;
-	//		enemy.image.width = FALSE;
-	//		enemy.image.height = FALSE;
-	//		enemy.image.x = FALSE;
-	//		enemy.image.y = FALSE;
+			enemy.image.handle = FALSE;
+			enemy.image.width = FALSE;
+			enemy.image.height = FALSE;
+			enemy.image.x = FALSE;
+			enemy.image.y = FALSE;
 
-	//		/*break;*/
-	//	}
+			/*break;*/
+		}
 
-	//}
+		
+
+	}
 
 
 	////敵２と弾２の当たり判定
@@ -1523,42 +1667,28 @@ VOID MY_PLAY_PROC(VOID)
 
 
 
-	//if (player.CanShot == FALSE)
-	//{
+	if (player.CanShot == FALSE)
+	{
 
-	//	if (player.ShotReLoadCnt == player.ShotReLoadCntMAX)
-	//	{
-	//		player.ShotReLoadCnt = 0;
-	//		player.CanShot = TRUE;
-	//	}
+		if (player.ShotReLoadCnt == player.ShotReLoadCntMAX)
+		{
+			player.ShotReLoadCnt = 0;
+			player.CanShot = TRUE;
+		}
 
-	//	player.ShotReLoadCnt++;
-	//}
+		player.ShotReLoadCnt++;
+	}
 
 
-	///*for (int num = 0; num < IMAGE_BACK_NUM; num++)
-	//{
-	//	ImageBack[num].image.y++;
 
-	//	if (ImageBack[num].IsDraw == FALSE)
-	//	{
-	//		if (ImageBack[num].image.y + ImageBack[num].image.height > 0)
-	//		{
-	//			ImageBack[num].IsDraw = TRUE;
-	//		}
-	//	}
 
-	//	if (ImageBack[num].image.y > GAME_HEIGHT)
-	//	{
-	//		ImageBack[num].image.y = 0 - ImageBack[0].image.height * 3;
-	//		ImageBack[num].IsDraw = FALSE;
-	//	}
-	//}*/
+
+	
 
 	//敵１の配置
-	enemy.image.x = GAME_WIDTH / 1.35 - enemy.image.width / 2; GAME_HANKEI* sin(enemy.image.radian);
-	enemy.image.y = GAME_HEIGHT / 3 + GAME_HANKEI * sin(enemy.image.radian) / 2;
-	enemy.image.radian += 0.01;
+	enemy.image.x = 500;
+	enemy.image.y = 200;
+	
 
 
 	////敵２の配置
@@ -1580,12 +1710,12 @@ VOID MY_PLAY_PROC(VOID)
 	//enemy5.image.radian += 0.01;
 
 
-	goalgazou.x = GAME_WIDTH / 5.2;
-	goalgazou.y = GAME_HEIGHT / 1.8;
+	/*goalgazou.x = GAME_WIDTH / 5.2;
+	goalgazou.y = GAME_HEIGHT / 1.8;*/
 
 
-	gategazou.x = GAME_WIDTH / 1.35;
-	gategazou.y = GAME_HEIGHT / 1.8;
+	warp.x = 400;
+	warp.y = 30;
 
 
 
@@ -1593,39 +1723,49 @@ VOID MY_PLAY_PROC(VOID)
 	{
 		heart[i] = heart[0];
 
-		heart[1].x = GAME_WIDTH / 7.2;
-		heart[1].y = GAME_HEIGHT / 3.8;
+		heart[0].x = 850;
+		heart[0].y = 30;
 
-		heart[2].x = GAME_WIDTH / 5.2;
-		heart[2].y = GAME_HEIGHT / 2.8;
+		heart[1].x = 770;
+		heart[1].y = 30;
 
-		heart[0].x = GAME_WIDTH / 5.2;
-		heart[0].y = GAME_HEIGHT / 1.8;
+		heart[2].x = 690;
+		heart[2].y = 30;
+
+		
 	}
+
+
 	
 
+	if (player.image.IsDraw == TRUE)
+	{
+		player.image.IsDraw = FALSE;
+	}
+	/*else if (player.image.IsDraw == FALSE)
+	{
+		player.image.IsDraw = TRUE;
+	}*/
 
 
 
+	hukidasi.x = 430;
+	hukidasi.y = 50;
+
+	hukidasi2.x = 150;
+	hukidasi2.y = 500;
+
+	
 
 	return;
 }
 
 VOID MY_PLAY_DRAW(VOID)
 {
-	//
-	//	for (int num = 0; num < IMAGE_BACK_NUM; num++)
-	//	{
-	//		if (ImageBack[num].IsDraw == TRUE)
-	//		{
-	DrawGraph(ImageBack.x, ImageBack.y, ImageBack.handle, TRUE);
 
-	/*DrawFormatString(
-		ImageBack[num].image.x,
-		ImageBack[num].image.y,
-		GetColor(255, 255, 255), "背景画像:%d", num + 1);
-}
-}*/
+	DrawGraph(back1.x, back1.y, back1.handle, TRUE);
+	
+		
 
 	for (int tate = 0; tate < GAME_MAP_TATE_MAX; tate++)
 	{
@@ -1660,14 +1800,40 @@ VOID MY_PLAY_DRAW(VOID)
 
 	/*DrawBox(GoalRect.left, GoalRect.top, GoalRect.right, GoalRect.bottom, GetColor(255, 255, 0), TRUE);*/
 
+	
+
+	if (warp.IsDraw == TRUE)
+	{
+
+		DrawGraph(warp.x, warp.y, warp.handle, TRUE);
+	}
+	
+
+	map1count++;
+
+	int a;
+	
+	a = map1count % 40 / 5;
+
+	if (a == 10)
+	{
+		a = 0;
+	}
+	
+	DrawGraph(360, 5, warphandle[a], TRUE);
+
+
 
 	DrawGraph(player.image.x, player.image.y, player.image.handle, TRUE);
-	//DrawBox(player.coll.left, player.coll.top, player.coll.right, player.coll.bottom, GetColor(255, 0, 0), FALSE);
+
+	DrawBox(player.coll.left, player.coll.top, player.coll.right, player.coll.bottom, GetColor(255, 0, 0), FALSE);
+
 
 	if (enemy.image.IsDraw == TRUE)
 	{
 		DrawGraph(enemy.image.x, enemy.image.y, enemy.image.handle, TRUE);
 	}
+
 
 
 	if (enemy2.image.IsDraw == TRUE)
@@ -1700,9 +1866,23 @@ VOID MY_PLAY_DRAW(VOID)
 			DrawGraph(heart[i].x, heart[i].y, heart[i].handle, TRUE);
 		}
 	}
+
+
+	
+		
 	
 
+	if (hukidasi.IsDraw == TRUE)
+	{
+		DrawGraph(hukidasi.x, hukidasi.y, hukidasi.handle, TRUE);
+	}
+		
 
+
+	if (hukidasi2.IsDraw == TRUE)
+	{
+		DrawGraph(hukidasi2.x, hukidasi2.y, hukidasi2.handle, TRUE);
+	}
 
 
 	if (goalgazou.IsDraw == TRUE)
@@ -1753,7 +1933,7 @@ VOID MY_PLAY_DRAW(VOID)
 			}
 			else
 			{
-				player.tama[cnt].y -= player.tama[cnt].speed;
+				player.tama[cnt].x -= player.tama[cnt].speed;
 			}
 		}
 	}
@@ -1808,6 +1988,7 @@ VOID MY_PLAY_DRAW(VOID)
 }
 
 
+//マップ２
 
 VOID MY_PLAY2(VOID)
 {
@@ -1821,6 +2002,24 @@ VOID MY_PLAY2(VOID)
 VOID MY_PLAY2_PROC(VOID)
 {
 
+	for (int num = 0; num < IMAGE_BACK_NUM; num++)
+	{
+		ImageBack[num].image.x++;
+
+		if (ImageBack[num].IsDraw == FALSE)
+		{
+			if (ImageBack[num].image.x + ImageBack[num].image.width > 0)
+			{
+				ImageBack[num].IsDraw = TRUE;
+			}
+		}
+
+		if (ImageBack[num].image.x > GAME_WIDTH)
+		{
+			ImageBack[num].image.x = 0 - ImageBack[0].image.width * 3;
+			ImageBack[num].IsDraw = FALSE;
+		}
+	}
 
 
 	if (CheckSoundMem(BGM.handle) == 0)
@@ -1959,6 +2158,21 @@ VOID MY_PLAY2_PROC(VOID)
 	Enemy5Rect.bottom = enemy5.image.y + enemy5.image.height;
 
 
+	
+	RECT SyokushuRect;
+	SyokushuRect.left = syokusyu[0].x;
+	SyokushuRect.top = syokusyu[0].y;
+	SyokushuRect.right = syokusyu[0].x + syokusyu[0].width;
+	SyokushuRect.bottom = syokusyu[0].y + syokusyu[0].height;
+
+
+	RECT Syokushu2Rect;
+	Syokushu2Rect.left = syokusyu[1].x;
+	Syokushu2Rect.top = syokusyu[1].y;
+	Syokushu2Rect.right = syokusyu[1].x + syokusyu[1].width;
+	Syokushu2Rect.bottom = syokusyu[1].y + syokusyu[1].height;
+	
+
 
 	RECT TamaRect;
 	TamaRect.left = tama.x + 10;
@@ -1966,156 +2180,155 @@ VOID MY_PLAY2_PROC(VOID)
 	TamaRect.right = tama.x + tama.width - 10;
 	TamaRect.bottom = tama.y + tama.height - 10;
 
-	RECT GoalRect2;
-	GoalRect2.left = goalgazou.x;
-	GoalRect2.top = goalgazou.y;
-	GoalRect2.right = goalgazou.x + goalgazou.width;
-	GoalRect2.bottom = goalgazou.y + goalgazou.height;
 
+
+	//触手1との当たり判定
+
+	
+		if (MY_CHECK_RECT_COLL(PlayerRect, SyokushuRect) == TRUE)
+		{
+			player.IsMuteki = TRUE;
+
+
+			/*int i = 0;
+
+			while (i < 3) {
+
+				heart[i].IsDraw = FALSE;
+
+				if (heart[i].IsDraw == FALSE)
+				{
+					i++;
+				}
+
+			}*/
+
+		}
+
+
+
+		//触手２との当たり判定
+
+		if (MY_CHECK_RECT_COLL(PlayerRect, Syokushu2Rect) == TRUE)
+		{
+			
+
+			if (player.IsMuteki == FALSE)
+			{
+				player.IsMuteki = TRUE;
+			}
+			
+
+			/*heart[heartnow].IsDraw = FALSE;*/
+
+		}
+
+		
+		if (player.IsMuteki == TRUE)
+		{
+
+			switch (heartnow)
+			{
+			case 0:
+				heart[0].IsDraw = FALSE;
+				break;
+
+			case 1:
+				heart[1].IsDraw = FALSE;
+				break;
+
+			case 2:
+				heart[2].IsDraw = FALSE;
+				break;
+
+
+				heartnow -= 1;
+
+			/*default:
+				break;*/
+			}
+		}
+		
+		
+
+
+		/*if (mutekicount < 32)
+		{
+			if (player.IsMuteki == TRUE)
+			{
+
+				heartnow -= 1;
+				heart[heartnow].IsDraw = FALSE;
+
+		
+				mutekicount += 1;
+				player.Ishit = FALSE;
+				if (player.IsDraw == TRUE)
+				{
+					player.IsDraw = FALSE;
+				}
+				else if (player.IsDraw == FALSE)
+				{
+					player.IsDraw = TRUE;
+				}
+			}
+		}
+		else if(mutekicount == 32)
+		{
+			mutekicount = 0;
+		}*/
 
 	
 
 
-	//ゴールの接触チェック
-	/*if (MY_CHECK_RECT_COLL(PlayerRect, GoalRect) == TRUE)
-	{
 
-		PlaySoundMem(goal.handle, DX_PLAYTYPE_BACK);
 
-		if (CheckSoundMem(BGM.handle) != 0)
-		{
-			StopSoundMem(BGM.handle);
-		}
 
-		SetMouseDispFlag(TRUE);
+	
 
-		GameEndKind = GAME_END_COMP;
-
-		GameScene = GAME_SCENE_END;
-
-		return;
-	}*/
+	
 
 
 
 
+	
 
-	//敵1の接触チェック
-
-
-	if (MY_CHECK_RECT_COLL(PlayerRect, EnemyRect) == TRUE)
-	{
-
-		for (int i = 0; i < HEART_NUM; i++)
-		{
-			heart[i].IsDraw = FALSE;
-
-			return;
-		}
-
-	}
+	
+	
+	
 
 
-	/*if (MY_CHECK_RECT_COLL(PlayerRect, EnemyRect) == TRUE)*/
-
-	/*for (int i = 0; i < HEART_NUM; i++)
-	{
-		if (heart[i].IsDraw == TRUE)
-		{
-			if (MY_CHECK_RECT_COLL(PlayerRect, EnemyRect) == TRUE)
-			{
-				heart[i].IsDraw = FALSE;
-
-			}
-			break;
-		}
-	}*/
-
-	////敵２の接触チェック
-	//if (MY_CHECK_RECT_COLL(PlayerRect, Enemy2Rect) == TRUE)
+	//if (player.Ishit == TRUE && mutekicount == 0)
 	//{
-	//	if (CheckSoundMem(BGM.handle) != 0)
+	//	mutekicount = 31;
+	//}
+	//
+
+	//if (player.IsMuteki == TRUE)
+	//{
+	//	if (mutekicount > 0)
 	//	{
-	//		StopSoundMem(BGM.handle);
-	//	}
+	//		mutekicount-=1;
 
-	//	GameEndKind = GAME_END_FAIL;	//ミッションフォールト！
+	//		if (player.IsDraw == TRUE)
+	//		{
+	//			player.IsDraw = FALSE;
+	//		}
+	//		else if (player.IsDraw == FALSE)
+	//		{
+	//			player.IsDraw = TRUE;
+	//		}
 
-	//	GameScene = GAME_SCENE_END;
-
-	//	return;	//強制的にエンド画面に飛ぶ
+	//		if (mutekicount <= 0)
+	//		{
+	//			mutekicount = 0;
+	//			player.Ishit = FALSE;
+	//		}
+	//	}	
 
 	//}
 
-
-	////敵３の接触チェック
-	//if (MY_CHECK_RECT_COLL(PlayerRect, Enemy3Rect) == TRUE)
-	//{
-	//	if (CheckSoundMem(BGM.handle) != 0)
-	//	{
-	//		StopSoundMem(BGM.handle);
-	//	}
-
-	//	GameEndKind = GAME_END_FAIL;	//ミッションフォールト！
-
-	//	GameScene = GAME_SCENE_END;
-
-	//	return;	//強制的にエンド画面に飛ぶ
-
-	//}
-
-
-
-	////敵４の接触チェック
-	//if (MY_CHECK_RECT_COLL(PlayerRect, Enemy4Rect) == TRUE)
-	//{
-	//	if (CheckSoundMem(BGM.handle) != 0)
-	//	{
-	//		StopSoundMem(BGM.handle);
-	//	}
-
-	//	GameEndKind = GAME_END_FAIL;	//ミッションフォールト！
-
-	//	GameScene = GAME_SCENE_END;
-
-	//	return;	//強制的にエンド画面に飛ぶ
-
-	//}
-
-
-
-	////敵５の接触チェック
-	//if (MY_CHECK_RECT_COLL(PlayerRect, Enemy5Rect) == TRUE)
-	//{
-	//	if (CheckSoundMem(BGM.handle) != 0)
-	//	{
-	//		StopSoundMem(BGM.handle);
-	//	}
-
-	//	GameEndKind = GAME_END_FAIL;	//ミッションフォールト！
-
-	//	GameScene = GAME_SCENE_END;
-
-	//	return;	//強制的にエンド画面に飛ぶ
-
-	//}
-
-
-	if (MY_CHECK_RECT_COLL(PlayerRect, GoalRect2) == TRUE)
-	{
-		if (CheckSoundMem(BGM.handle) != 0)
-		{
-			StopSoundMem(BGM.handle);
-		}
-
-		GameEndKind = GAME_END_COMP;
-
-		GameScene = GAME_SCENE_END;
-
-		return;	//強制的にエンド画面に飛ぶ
-	}
-
-
+	
 
 	//プレイヤーが画面外に出たら
 	if (player.image.x > GAME_WIDTH || player.image.y > GAME_HEIGHT
@@ -2325,135 +2538,237 @@ VOID MY_PLAY2_PROC(VOID)
 	//}
 
 
-	////ゴールの出現条件
-	///*if (enemy.image.IsDraw == FALSE)
-	//{
-	//	if (enemy2.image.IsDraw == FALSE)
-	//		{
-	//		if (enemy3.image.IsDraw == FALSE)
-	//			{
-	//			if (enemy4.image.IsDraw == FALSE)
-	//				{
-	//					goalgazou.IsDraw = TRUE;
 
-	//				}
-	//			}
-	//		}
-	//}*/
+	if (player.CanShot == FALSE)
+	{
 
+		if (player.ShotReLoadCnt == player.ShotReLoadCntMAX)
+		{
+			player.ShotReLoadCnt = 0;
+			player.CanShot = TRUE;
+		}
 
+		player.ShotReLoadCnt++;
+	}
 
-	//if (player.CanShot == FALSE)
-	//{
-
-	//	if (player.ShotReLoadCnt == player.ShotReLoadCntMAX)
-	//	{
-	//		player.ShotReLoadCnt = 0;
-	//		player.CanShot = TRUE;
-	//	}
-
-	//	player.ShotReLoadCnt++;
-	//}
-
-
-	///*for (int num = 0; num < IMAGE_BACK_NUM; num++)
-	//{
-	//	ImageBack[num].image.y++;
-
-	//	if (ImageBack[num].IsDraw == FALSE)
-	//	{
-	//		if (ImageBack[num].image.y + ImageBack[num].image.height > 0)
-	//		{
-	//			ImageBack[num].IsDraw = TRUE;
-	//		}
-	//	}
-
-	//	if (ImageBack[num].image.y > GAME_HEIGHT)
-	//	{
-	//		ImageBack[num].image.y = 0 - ImageBack[0].image.height * 3;
-	//		ImageBack[num].IsDraw = FALSE;
-	//	}
-	//}*/
 
 	//敵１の配置
-	enemy.image.x = GAME_WIDTH / 1.35 - enemy.image.width / 2; GAME_HANKEI* sin(enemy.image.radian);
-	enemy.image.y = GAME_HEIGHT / 3 + GAME_HANKEI * sin(enemy.image.radian) / 2;
-	enemy.image.radian += 0.01;
+	
+		/*if (enemy.count < 100000)
+		{
+			enemy.count += 1;
+
+			if (enemy.count > 400)
+			{
+				enemy.image.x++;
+				enemy.image.y = 400;
+			}
+		}
 
 
-	//敵２の配置
-	enemy2.image.x = GAME_WIDTH / 1.8;
-	enemy2.image.y = GAME_HEIGHT / 8.5;
+		if (enemy.image.x > GAME_WIDTH)
+		{
+			enemy.image.IsDraw = FALSE;
+		}*/
 
 
-	enemy3.image.x = GAME_WIDTH / 8 + GAME_HANKEI * sin(enemy3.image.radian) / 1.3;
-	enemy3.image.y = GAME_HEIGHT / 6 - enemy3.image.width / 2; GAME_HANKEI* sin(enemy3.image.radian);
-	enemy3.image.radian += 0.04;
-
-	enemy4.image.x = GAME_WIDTH / 2.5 - GAME_HANKEI * sin(enemy4.image.radian) / 1.5;
-	enemy4.image.y = GAME_HEIGHT / 1.6 - enemy4.image.width / 2; GAME_HANKEI* sin(enemy4.image.radian);
-	enemy4.image.radian += 0.02;
+		
+	//[[カウント]]
 
 
-	enemy5.image.x = GAME_WIDTH / 10 - GAME_HANKEI * sin(enemy5.image.radian) / 6;
-	enemy5.image.y = GAME_HEIGHT / 1.2 - enemy5.image.width / 2; GAME_HANKEI* sin(enemy5.image.radian);
-	enemy5.image.radian += 0.01;
+	enemycount += 1;
 
 
-	goalgazou.x = GAME_WIDTH / 5.2;
-	goalgazou.y = GAME_HEIGHT / 1.8;
+	//赤は危険！緑は安全
 
+	hukidasi3.x = 150;
+	hukidasi3.y = 500;
 
-
-	for (int i = 0; i < HEART_NUM; i++)
+	if (enemycount > 50)
 	{
-		heart[i] = heart[0];
+		if (enemycount < 300)
+		{
+			hukidasi3.IsDraw = TRUE;
+		}
+		if (enemycount == 300)
+		{
+			hukidasi3.IsDraw = FALSE;
+		}
+	}
 
-		heart[1].x = GAME_WIDTH / 7.2;
-		heart[1].y = GAME_HEIGHT / 3.8;
 
-		heart[2].x = GAME_WIDTH / 5.2;
-		heart[2].y = GAME_HEIGHT / 2.8;
+	//エリア配置
 
-		heart[0].x = GAME_WIDTH / 5.2;
-		heart[0].y = GAME_HEIGHT / 1.8;
+	for (int i = 0; i < DENGER_TATE_NUM; i++)
+	{
+		denger_tate[i] = denger_tate[0];
+
+
+		denger_tate[0].x = 0;
+		denger_tate[0].y = 0;
+
+	}
+
+
+	
+
+
+
+	for (int i = 0; i < SAFE_TATE_NUM; i++)
+	{
+		safe_tate[i] = safe_tate[0];
+
+
+		safe_tate[0].x = 0;
+		safe_tate[0].y = 0;
 	}
 
 
 
+	for (int i = 0; i < SAFE_YOKO_NUM; i++)
+	{
+		safe_yoko[i] = safe_yoko[0];
 
 
+		safe_yoko[0].x = 0;
+		safe_yoko[0].y = 0;
+
+	}
+
+
+	
+
+
+	//赤エリア１回目表示
+
+
+	if (enemycount > 350)
+	{
+		if (enemycount < 550)
+		{
+			denger_yoko[0].IsDraw = TRUE;
+		}
+		if (enemycount == 550)
+		{
+			denger_yoko[0].IsDraw = FALSE;
+		}
+	}
+
+
+	//触手１回目の攻撃
+
+	if (enemycount > 600)
+	{
+			syokusyu[0].IsDraw = TRUE;
+			syokusyu[0].x -= 10;				
+	}
+
+
+	//赤エリア２回目表示
+
+	
+	if (enemycount > 900)
+	{
+		if (enemycount < 1100)
+		{
+			denger_yoko[1].IsDraw = TRUE;
+		}
+		if (enemycount == 1100)
+		{
+			denger_yoko[1].IsDraw = FALSE;
+		}
+	}
+
+
+	//触手２
+	if (enemycount > 1150)
+	{
+					
+		syokusyu[1].IsDraw = TRUE;
+		syokusyu[1].x -= 10;
+
+	}
+	
 
 	return;
 }
 
 VOID MY_PLAY2_DRAW(VOID)
 {
-	//
-	//	for (int num = 0; num < IMAGE_BACK_NUM; num++)
-	//	{
-	//		if (ImageBack[num].IsDraw == TRUE)
-	//		{
-	DrawGraph(ImageBack.x, ImageBack.y, ImageBack.handle, TRUE);
-
-	/*DrawFormatString(
-		ImageBack[num].image.x,
-		ImageBack[num].image.y,
-		GetColor(255, 255, 255), "背景画像:%d", num + 1);
-}
-}*/
-
-	for (int tate = 0; tate < GAME_MAP_TATE_MAX; tate++)
+	
+	for (int num = 0; num < IMAGE_BACK_NUM; num++)
 	{
-		for (int yoko = 0; yoko < GAME_MAP_YOKO_MAX; yoko++)
+		if (ImageBack[num].IsDraw == TRUE)
 		{
-			DrawGraph(
-				map[tate][yoko].x,
-				map[tate][yoko].y,
-				mapChip.handle[map[tate][yoko].kind],
-				TRUE);
+			DrawGraph(ImageBack[num].image.x, ImageBack[num].image.y, ImageBack[num].image.handle, TRUE);
+
 		}
 	}
+
+
+
+	//◆◆◆◆◆◆◆◆◆◆【エリア】◆◆◆◆◆◆◆◆◆◆
+
+	
+	for (int i = 0; i < DENGER_TATE_NUM; i++)
+	{
+		if (denger_tate[i].IsDraw == TRUE)
+		{
+			DrawGraph(denger_tate[i].x, denger_tate[i].y, denger_tate[i].handle, TRUE);
+		}
+	}
+
+
+	for (int i = 0; i < DENGER_YOKO_NUM; i++)
+	{
+		if (denger_yoko[i].IsDraw == TRUE)
+		{
+			DrawGraph(denger_yoko[i].x, denger_yoko[i].y, denger_yoko[i].handle, TRUE);
+		}
+	}
+
+
+
+	for (int i = 0; i < SAFE_TATE_NUM; i++)
+	{
+		if (safe_tate[i].IsDraw == TRUE)
+		{
+			DrawGraph(safe_tate[i].x, safe_tate[i].y, safe_tate[i].handle, TRUE);
+		}
+	}
+
+
+
+	for (int i = 0; i < SAFE_YOKO_NUM; i++)
+	{
+		if (safe_yoko[i].IsDraw == TRUE)
+		{
+			DrawGraph(safe_yoko[i].x, safe_yoko[i].y, safe_yoko[i].handle, TRUE);
+		}
+	}
+		
+
+
+	for (int i = 0; i < HEART_NUM; i++)
+	{
+		if (heart[i].IsDraw == TRUE)
+		{
+			DrawGraph(heart[i].x, heart[i].y, heart[i].handle, TRUE);
+		}
+	}
+
+
+	/*for (int tate = 0; tate < GAME_MAP2_TATE_MAX; tate++)
+	{
+		for (int yoko = 0; yoko < GAME_MAP2_YOKO_MAX; yoko++)
+		{
+			DrawGraph(
+				map2[tate][yoko].x,
+				map2[tate][yoko].y,
+				mapChip2.handle[map2[tate][yoko].kind],
+				TRUE);
+		}
+	}*/
 
 	/*for (int tate = 0; tate < GAME_MAP_TATE_MAX; tate++)
 	{
@@ -2476,55 +2791,30 @@ VOID MY_PLAY2_DRAW(VOID)
 
 	/*DrawBox(GoalRect.left, GoalRect.top, GoalRect.right, GoalRect.bottom, GetColor(255, 255, 0), TRUE);*/
 
-
-	DrawGraph(player.image.x, player.image.y, player.image.handle, TRUE);
+	if (player.IsDraw == TRUE)
+	{
+		DrawGraph(player.image.x, player.image.y, player.image.handle, TRUE);
+	}
+		
+	
 	//DrawBox(player.coll.left, player.coll.top, player.coll.right, player.coll.bottom, GetColor(255, 0, 0), FALSE);
 
-	if (enemy.image.IsDraw == TRUE)
+
+	
+
+	for (int i = 0; i < SHOKUSHU_NUM; i++)
 	{
-		DrawGraph(enemy.image.x, enemy.image.y, enemy.image.handle, TRUE);
-	}
-
-
-	if (enemy2.image.IsDraw == TRUE)
-	{
-		DrawGraph(enemy2.image.x, enemy2.image.y, enemy2.image.handle, TRUE);
-	}
-
-	if (enemy3.image.IsDraw == TRUE)
-	{
-		DrawGraph(enemy3.image.x, enemy3.image.y, enemy3.image.handle, TRUE);
-	}
-
-
-	if (enemy4.image.IsDraw == TRUE)
-	{
-		DrawGraph(enemy4.image.x, enemy4.image.y, enemy4.image.handle, TRUE);
-	}
-
-
-	if (enemy5.image.IsDraw == TRUE)
-	{
-		DrawGraph(enemy5.image.x, enemy5.image.y, enemy5.image.handle, TRUE);
-	}
-
-
-	for (int i = 0; i < HEART_NUM; i++)
-	{
-		if (heart[i].IsDraw == TRUE)
+		if (syokusyu[i].IsDraw == TRUE)
 		{
-			DrawGraph(heart[i].x, heart[i].y, heart[i].handle, TRUE);
+			DrawGraph(syokusyu[i].x, syokusyu[i].y, syokusyu[i].handle, TRUE);
 		}
 	}
+	
 
 
-
-
-
-	if (goalgazou.IsDraw == TRUE)
+	if (hukidasi3.IsDraw == TRUE)
 	{
-		DrawGraph(goalgazou.x, goalgazou.y, goalgazou.handle, TRUE);
-
+		DrawGraph(hukidasi3.x, hukidasi3.y, hukidasi3.handle, TRUE);
 	}
 
 
@@ -2753,6 +3043,10 @@ VOID MY_END_DRAW(VOID)
 BOOL MY_LOAD_IMAGE(VOID)
 {
 
+	LoadDivGraph(
+		"pipo-mapeffect015_192.png",
+		10, 5, 2, 192, 192, warphandle);
+
 	strcpy_s(ImageTitleBK.path, IMAGE_TITLE_BK_PATH);
 	ImageTitleBK.handle = LoadGraph(ImageTitleBK.path);
 	if (ImageTitleBK.handle == -1)
@@ -2798,8 +3092,6 @@ BOOL MY_LOAD_IMAGE(VOID)
 	ImageTitleSTART.IsDraw = FALSE;
 
 
-
-	//追加
 	strcpy_s(ImageEndCOMP.image.path, IMAGE_END_COMP_PATH);
 	ImageEndCOMP.image.handle = LoadGraph(ImageEndCOMP.image.path);
 	if (ImageEndCOMP.image.handle == -1)
@@ -2829,26 +3121,26 @@ BOOL MY_LOAD_IMAGE(VOID)
 	ImageEndFAIL.IsDraw = FALSE;
 
 
-
-
-
-	strcpy_s(ImageBack.path, IMAGE_BACK_PATH);
-	ImageBack.handle = LoadGraph(ImageBack.path);			//読み込み
-	if (ImageBack.handle == -1)
+	strcpy_s(back1.path, IMAGE_BACK1_PATH);
+	back1.handle = LoadGraph(back1.path);			//読み込み
+	if (back1.handle == -1)
 	{
 		//エラーメッセージ表示
-		MessageBox(GetMainWindowHandle(), IMAGE_BACK_PATH, IMAGE_LOAD_ERR_TITLE, MB_OK);
+		MessageBox(GetMainWindowHandle(), IMAGE_BACK1_PATH, IMAGE_LOAD_ERR_TITLE, MB_OK);
 		return FALSE;
 	}
-	GetGraphSize(ImageBack.handle, &ImageBack.width, &ImageBack.height);	//画像の幅と高さを取得
-	ImageBack.x = GAME_WIDTH / 2 - ImageBack.width / 2;		//左右中央揃え
-	ImageBack.y = GAME_HEIGHT / 2 - ImageBack.height / 2;		//上下中央揃え
+	GetGraphSize(back1.handle, &back1.width, &back1.height);	//画像の幅と高さを取得
+	back1.x = GAME_WIDTH / 2 - back1.width / 2;		//左右中央揃え
+	back1.y = GAME_HEIGHT / 2 - back1.height / 2;		//上下中央揃え
 
-	/*strcpy_s(ImageBack[1].image.path, IMAGE_BACK_REV_PATH);
+
+
+	strcpy_s(ImageBack[0].image.path, IMAGE_BACK_PATH);
+	strcpy_s(ImageBack[1].image.path, IMAGE_BACK_REV_PATH);
 	strcpy_s(ImageBack[2].image.path, IMAGE_BACK_PATH);
-	strcpy_s(ImageBack[3].image.path, IMAGE_BACK_REV_PATH);*/
+	strcpy_s(ImageBack[3].image.path, IMAGE_BACK_REV_PATH);
 
-	/*for (int num = 0; num < IMAGE_BACK_NUM; num++)
+	for (int num = 0; num < IMAGE_BACK_NUM; num++)
 	{
 		ImageBack[num].image.handle = LoadGraph(ImageBack[num].image.path);
 		if (ImageBack[num].image.handle == -1)
@@ -2860,21 +3152,21 @@ BOOL MY_LOAD_IMAGE(VOID)
 		GetGraphSize(ImageBack[num].image.handle, &ImageBack[num].image.width, &ImageBack[num].image.height);
 	}
 
-	ImageBack[0].image.x = GAME_WIDTH / 2 - ImageBack[0].image.width / 2;
-	ImageBack[0].image.y = 0 - ImageBack[0].image.height * 0;
+	ImageBack[0].image.x = 0 - ImageBack[0].image.width * 0;
+	ImageBack[0].image.y = GAME_HEIGHT / 2 - ImageBack[0].image.height / 2;
 	ImageBack[0].IsDraw = FALSE;
 
-	ImageBack[1].image.x = GAME_WIDTH / 2 - ImageBack[1].image.width / 2;
-	ImageBack[1].image.y = 0 - ImageBack[0].image.height * 1;
+	ImageBack[1].image.x = 0 - ImageBack[0].image.width * 1;
+	ImageBack[1].image.y = GAME_HEIGHT / 2 - ImageBack[1].image.height / 2;
 	ImageBack[1].IsDraw = FALSE;
 
-	ImageBack[2].image.x = GAME_WIDTH / 2 - ImageBack[2].image.width / 2;
-	ImageBack[2].image.y = 0 - ImageBack[0].image.height * 2;
+	ImageBack[2].image.x = 0 - ImageBack[0].image.width * 2;
+	ImageBack[2].image.y = GAME_HEIGHT / 2 - ImageBack[2].image.height / 2;
 	ImageBack[2].IsDraw = FALSE;
 
-	ImageBack[3].image.x = GAME_WIDTH / 2 - ImageBack[2].image.width / 2;
-	ImageBack[3].image.y = 0 - ImageBack[0].image.height * 3;
-	ImageBack[3].IsDraw = FALSE;*/
+	ImageBack[3].image.x = 0 - ImageBack[0].image.width * 3;
+	ImageBack[3].image.y = GAME_HEIGHT / 2 - ImageBack[3].image.height / 2;
+	ImageBack[3].IsDraw = FALSE;
 
 
 	//プレイヤーの配置
@@ -2891,6 +3183,8 @@ BOOL MY_LOAD_IMAGE(VOID)
 	player.CenterX = player.image.x + player.image.width / 2;		//画像の横の中心を探す
 	player.CenterY = player.image.y + player.image.height / 2;		//画像の縦の中心を探す
 	player.speed = CHARA_SPEED_LOW;
+	player.IsDraw = TRUE;
+	player.IsMuteki = FALSE;
 
 
 	//敵の配置
@@ -2904,6 +3198,7 @@ BOOL MY_LOAD_IMAGE(VOID)
 	GetGraphSize(enemy.image.handle, &enemy.image.width, &enemy.image.height);	//画像の幅と高さを取得
 
 	enemy.radian = 0.0;
+	enemycount = 0.0;
 	enemy.speed = CHARA_SPEED_LOW;
 	enemy.image.IsDraw = TRUE;
 
@@ -2968,6 +3263,21 @@ BOOL MY_LOAD_IMAGE(VOID)
 	enemy5.image.IsDraw = TRUE;
 
 
+	//触手
+	strcpy_s(syokusyu[0].path, IMAGE_syokusyu_PATH);
+	syokusyu[0].handle = LoadGraph(syokusyu[0].path);
+	if (syokusyu[0].handle == -1)
+	{
+		MessageBox(GetMainWindowHandle(), IMAGE_syokusyu_PATH, IMAGE_LOAD_ERR_TITLE, MB_OK);
+		return FALSE;
+	}
+	GetGraphSize(syokusyu[0].handle, &syokusyu[0].width, &syokusyu[0].height);	//画像の幅と高さを取得
+
+	syokusyu[0].radian = 0.0;
+	syokusyu[0].IsDraw = FALSE;
+
+
+	//ハート
 	strcpy_s(heart[0].path, IMAGE_HEART_PATH);
 	heart[0].handle = LoadGraph(heart[0].path);
 	if (heart[0].handle == -1)
@@ -2977,9 +3287,95 @@ BOOL MY_LOAD_IMAGE(VOID)
 	}
 	GetGraphSize(heart[0].handle, &heart[0].width, &heart[0].height);	//画像の幅と高さを取得
 
-	/*heart.radian = 0.0;
-	heart.speed = CHARA_SPEED_LOW;*/
 	heart[0].IsDraw = TRUE;
+
+
+	////エリア
+
+	//赤エリア縦
+	strcpy_s(denger_tate[0].path, IMAGE_DENGER_TATE_PATH);
+	denger_tate[0].handle = LoadGraph(denger_tate[0].path);
+	if (denger_tate[0].handle == -1)
+	{
+		MessageBox(GetMainWindowHandle(), IMAGE_DENGER_TATE_PATH, IMAGE_LOAD_ERR_TITLE, MB_OK);
+		return FALSE;
+	}
+	GetGraphSize(denger_tate[0].handle, &denger_tate[0].width, &denger_tate[0].height);	//画像の幅と高さを取得
+	denger_tate[0].IsDraw = FALSE;
+
+
+	//赤エリア横
+	strcpy_s(denger_yoko[0].path, IMAGE_DENGER_YOKO_PATH);
+	denger_yoko[0].handle = LoadGraph(denger_yoko[0].path);
+	if (denger_yoko[0].handle == -1)
+	{
+		MessageBox(GetMainWindowHandle(), IMAGE_DENGER_YOKO_PATH, IMAGE_LOAD_ERR_TITLE, MB_OK);
+		return FALSE;
+	}
+	GetGraphSize(denger_yoko[0].handle, &denger_yoko[0].width, &denger_yoko[0].height);	//画像の幅と高さを取得
+	denger_yoko[0].IsDraw = FALSE;
+
+
+	//緑エリア縦
+	strcpy_s(safe_tate[0].path, IMAGE_SAFE_TATE_PATH);
+	safe_tate[0].handle = LoadGraph(safe_tate[0].path);
+	if (safe_tate[0].handle == -1)
+	{
+		MessageBox(GetMainWindowHandle(), IMAGE_SAFE_TATE_PATH, IMAGE_LOAD_ERR_TITLE, MB_OK);
+		return FALSE;
+	}
+	GetGraphSize(safe_tate[0].handle, &safe_tate[0].width, &safe_tate[0].height);	//画像の幅と高さを取得
+	safe_tate[0].IsDraw = FALSE;
+
+
+	//緑エリア横
+	
+	strcpy_s(safe_yoko[0].path, IMAGE_SAFE_YOKO_PATH);
+	safe_yoko[0].handle = LoadGraph(safe_yoko[0].path);
+	if (safe_yoko[0].handle == -1)
+	{
+		MessageBox(GetMainWindowHandle(), IMAGE_SAFE_YOKO_PATH, IMAGE_LOAD_ERR_TITLE, MB_OK);
+		return FALSE;
+	}
+	GetGraphSize(safe_yoko[0].handle, &safe_yoko[0].width, &safe_yoko[0].height);	//画像の幅と高さを取得
+	safe_yoko[0].IsDraw = FALSE;
+
+
+	// 吹き出し
+	strcpy_s(hukidasi.path, IMAGE_HUKIDASI_PATH);
+	hukidasi.handle = LoadGraph(hukidasi.path);
+	if (hukidasi.handle == -1)
+	{
+		MessageBox(GetMainWindowHandle(), IMAGE_HUKIDASI_PATH, IMAGE_LOAD_ERR_TITLE, MB_OK);
+		return FALSE;
+	}
+	GetGraphSize(hukidasi.handle, &hukidasi.width, &hukidasi.height);
+	hukidasi.IsDraw = FALSE;
+
+
+
+	strcpy_s(hukidasi2.path, IMAGE_HUKIDASI2_PATH);
+	hukidasi2.handle = LoadGraph(hukidasi2.path);
+	if (hukidasi2.handle == -1)
+	{
+		MessageBox(GetMainWindowHandle(), IMAGE_HUKIDASI2_PATH, IMAGE_LOAD_ERR_TITLE, MB_OK);
+		return FALSE;
+	}
+	GetGraphSize(hukidasi2.handle, &hukidasi2.width, &hukidasi2.height);
+	hukidasi2.IsDraw = FALSE;
+
+
+
+	strcpy_s(hukidasi3.path, IMAGE_HUKIDASI3_PATH);
+	hukidasi3.handle = LoadGraph(hukidasi3.path);
+	if (hukidasi3.handle == -1)
+	{
+		MessageBox(GetMainWindowHandle(), IMAGE_HUKIDASI3_PATH, IMAGE_LOAD_ERR_TITLE, MB_OK);
+		return FALSE;
+	}
+	GetGraphSize(hukidasi3.handle, &hukidasi3.width, &hukidasi3.height);
+	hukidasi3.IsDraw = FALSE;
+
 
 
 	strcpy_s(goalgazou.path, IMAGE_GOAL_PATH);
@@ -2991,21 +3387,21 @@ BOOL MY_LOAD_IMAGE(VOID)
 	}
 	GetGraphSize(goalgazou.handle, &goalgazou.width, &goalgazou.height);	//画像の幅と高さを取得
 
-	goalgazou.IsDraw = TRUE;
+	goalgazou.IsDraw = FALSE;
 
 
 
-	strcpy_s(gategazou.path, IMAGE_GATE_PATH);
-	gategazou.handle = LoadGraph(gategazou.path);
-	if (gategazou.handle == -1)
+	//ワープ
+
+	strcpy_s(warp.path, IMAGE_WARP_PATH);
+	warp.handle = LoadGraph(warp.path);
+	if (warp.handle == -1)
 	{
-		MessageBox(GetMainWindowHandle(), IMAGE_GATE_PATH, IMAGE_LOAD_ERR_TITLE, MB_OK);
+		MessageBox(GetMainWindowHandle(), IMAGE_WARP_PATH, IMAGE_LOAD_ERR_TITLE, MB_OK);
 		return FALSE;
 	}
-	GetGraphSize(gategazou.handle, &gategazou.width, &gategazou.height);	//画像の幅と高さを取得
-
-	gategazou.IsDraw = TRUE;
-
+	GetGraphSize(warp.handle, &warp.width, &warp.height);	
+	warp.IsDraw = TRUE;
 
 
 
@@ -3103,6 +3499,8 @@ BOOL MY_LOAD_IMAGE(VOID)
 	}
 
 
+
+	//マップ１
 	int mapRes = LoadDivGraph(
 		GAME_MAP_PATH,
 		MAP_DIV_NUM, MAP_DIV_TATE, MAP_DIV_YOKO,
@@ -3148,6 +3546,51 @@ BOOL MY_LOAD_IMAGE(VOID)
 
 
 
+	//マップ２
+	int mapRes2 = LoadDivGraph(
+		GAME_MAP2_PATH,
+		MAP2_DIV_NUM, MAP2_DIV_TATE, MAP2_DIV_YOKO,
+		MAP2_DIV_WIDTH, MAP2_DIV_HEIGHT,
+		&mapChip2.handle[0]);
+
+	if (mapRes2 == -1)
+	{
+		MessageBox(GetMainWindowHandle(), GAME_MAP2_PATH, IMAGE_LOAD_ERR_TITLE, MB_OK);
+		return FALSE;
+	}
+
+	GetGraphSize(mapChip2.handle[0], &mapChip2.width, &mapChip2.height);
+
+	for (int tate = 0; tate < GAME_MAP2_TATE_MAX; tate++)
+	{
+		for (int yoko = 0; yoko < GAME_MAP2_YOKO_MAX; yoko++)
+		{
+			mapData2Init[tate][yoko] = mapData2[tate][yoko];
+
+			map2[tate][yoko].kind = mapData2[tate][yoko];
+
+			map2[tate][yoko].width = mapChip2.width;
+			map2[tate][yoko].height = mapChip2.height;
+
+			map2[tate][yoko].x = yoko * map2[tate][yoko].width;
+			map2[tate][yoko].y = tate * map2[tate][yoko].height;
+		}
+	}
+
+
+	/*for (int tate = 0; tate < GAME_MAP2_TATE_MAX; tate++)
+	{
+		for (int yoko = 0; yoko < GAME_MAP2_YOKO_MAX; yoko++)
+		{
+			mapColl[tate][yoko].left = (yoko + 0) * mapChip2.width + 1;
+			mapColl[tate][yoko].top = (tate + 0) * mapChip2.height + 1;
+			mapColl[tate][yoko].right = (yoko + 1) * mapChip2.width - 1;
+			mapColl[tate][yoko].bottom = (tate + 1) * mapChip2.height - 1;
+
+		}
+	}*/
+
+
 
 	return TRUE;
 }
@@ -3158,9 +3601,10 @@ BOOL MY_LOAD_IMAGE(VOID)
 
 VOID MY_DELETE_IMAGE(VOID)
 {
-	/*for (int num = 0; num < IMAGE_BACK_NUM; num++)
-	{*/
-	DeleteGraph(ImageBack.handle);
+	for (int num = 0; num < IMAGE_BACK_NUM; num++)
+	{
+		DeleteGraph(ImageBack[0].image.handle);
+	}
 
 	DeleteGraph(player.image.handle);
 	DeleteGraph(enemy.image.handle);
@@ -3171,13 +3615,23 @@ VOID MY_DELETE_IMAGE(VOID)
 	DeleteGraph(goalgazou.handle);
 	DeleteGraph(gategazou.handle);
 
-	DeleteGraph(ImageBack.handle);
 	DeleteGraph(ImageTitleROGO.image.handle);
 	DeleteGraph(ImageTitleSTART.image.handle);
 
 
 	DeleteGraph(ImageEndCOMP.image.handle);
 	DeleteGraph(ImageEndFAIL.image.handle);
+
+	DeleteGraph(warp.handle);
+	DeleteGraph(hukidasi.handle);
+	DeleteGraph(hukidasi2.handle);
+	DeleteGraph(hukidasi3.handle);
+	
+
+	for (int i = 0; i < SHOKUSHU_NUM; i++)
+	{
+		DeleteGraph(syokusyu[i].handle);
+	}
 
 
 	for (int i = 0; i < HEART_NUM; i++)
@@ -3187,12 +3641,39 @@ VOID MY_DELETE_IMAGE(VOID)
 
 
 
+	for (int i = 0; i < DENGER_TATE_NUM; i++)
+	{
+		DeleteGraph(denger_tate[i].handle);
+	}
+
+	for (int i = 0; i < DENGER_YOKO_NUM; i++)
+	{
+		DeleteGraph(denger_yoko[i].handle);
+	}
+
+	for (int i = 0; i < SAFE_TATE_NUM; i++)
+	{
+		DeleteGraph(safe_tate[i].handle);
+	}
+
+	for (int i = 0; i < SAFE_YOKO_NUM; i++)
+	{
+		DeleteGraph(safe_yoko[i].handle);
+	}
+	
+
+
+	
+
+
 
 	for (int i_num = 0; i_num < TAMA_DIV_NUM; i_num++) { DeleteGraph(player.tama[0].handle[i_num]); }
 	for (int i_num = 0; i_num < TAMA_DIV_NUM; i_num++) { DeleteGraph(player.tama2[0].handle[i_num]); }
 
 
 	for (int i_num = 0; i_num < MAP_DIV_NUM; i_num++) { DeleteGraph(mapChip.handle[i_num]); }
+	
+	for (int i_num = 0; i_num < MAP2_DIV_NUM; i_num++) { DeleteGraph(mapChip2.handle[i_num]); }
 
 
 	/*DeleteGraph(STARTBACK.handle);*/
@@ -3201,7 +3682,7 @@ VOID MY_DELETE_IMAGE(VOID)
 }
 
 
-//音楽削除
+//音楽
 
 BOOL MY_LOAD_MUSIC(VOID)
 {
@@ -3239,13 +3720,13 @@ BOOL MY_LOAD_MUSIC(VOID)
 	}
 
 
-	strcpy_s(voice_make.path, MUSIC_VOICE2_PATH);
+	/*strcpy_s(voice_make.path, MUSIC_VOICE2_PATH);
 	voice_make.handle = LoadSoundMem(voice_make.path);
 	if (voice_make.handle == -1)
 	{
 		MessageBox(GetMainWindowHandle(), MUSIC_VOICE2_PATH, MUSIC_LOAD_ERR_TITLE, MB_OK);
 		return FALSE;
-	}
+	}*/
 
 
 	strcpy_s(gekiha.path, MUSIC_GEKIHA_PATH);
@@ -3317,13 +3798,13 @@ BOOL MY_LOAD_MUSIC(VOID)
 		return FALSE;
 	}
 
-	strcpy_s(voice_ei.path, MUSIC_VOICE_PATH);
+	/*strcpy_s(voice_ei.path, MUSIC_VOICE_PATH);
 	voice_ei.handle = LoadSoundMem(voice_ei.path);
 	if (voice_ei.handle == -1)
 	{
 		MessageBox(GetMainWindowHandle(), MUSIC_VOICE_PATH, MUSIC_LOAD_ERR_TITLE, MB_OK);
 		return FALSE;
-	}
+	}*/
 
 	return TRUE;
 }
@@ -3341,8 +3822,6 @@ VOID MY_DELETE_MUSIC(VOID)
 	DeleteSoundMem(menuno.handle);
 	DeleteSoundMem(goal.handle);
 	DeleteSoundMem(gameover.handle);
-	DeleteSoundMem(voice_ei.handle);
-	DeleteSoundMem(voice_make.handle);
 	DeleteSoundMem(gekiha.handle);
 
 	return;
@@ -3359,13 +3838,28 @@ BOOL MY_CHECK_MAP1_PLAYER_COLL(RECT player)
 		{
 			if (MY_CHECK_RECT_COLL(player, mapColl[tate][yoko]) == TRUE)
 			{
-				if (map[tate][yoko].kind == k) { return TRUE; }
+				if (GameScene == GAME_SCENE_PLAY)
+				{
+					if (map[tate][yoko].kind == k)
+					{
+						return TRUE;
+					}
+				}
+				else if (GameScene == GAME_SCENE_PLAY2)
+				{
+					if (map[tate][yoko].kind == k)
+					{
+						return FALSE;
+					}
+				}
+				
 			}
 		}
 	}
 
 	return FALSE;
 }
+
 
 
 //領域の当たり判定
@@ -3376,8 +3870,16 @@ BOOL MY_CHECK_RECT_COLL(RECT a, RECT b)
 		a.right > b.left &&
 		a.bottom > b.top)
 	{
+		
 		return TRUE;
+		player.Ishit = TRUE;
+	
+	}
+	else
+	{
+		player.Ishit = FALSE;
 	}
 
 	return FALSE;
+	
 }
