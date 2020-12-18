@@ -372,9 +372,6 @@ typedef struct STRUCT_CHARA
 	RECT coll;
 	iPOINT collBeforePt;
 
-	BOOL IsMuteki;
-	BOOL Ishit = FALSE;
-
 
 }CHARA;
 
@@ -475,8 +472,13 @@ int warphandle[10];
 int y_warphandle[10];
 
 
-int heartnow = 2;
+int heartnow = 3;
+int damge = 0;
+int hp = 500;
 
+
+BOOL IsMuteki = FALSE;
+BOOL Ishit = TRUE;
 BOOL MojiDraw = FALSE;
 
 RECT GoalRect = { -1,-1,-1,-1 };
@@ -652,8 +654,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	SetMainWindowText(TEXT(GAME_WINDOW_NAME));
 	SetAlwaysRunFlag(TRUE);
 	SetWindowIconID(IDI_ICON1);
-	int PlayerDamageCounter = 0;
-
+	
 
 	if (DxLib_Init() == -1) { return -1; }
 
@@ -1298,43 +1299,70 @@ VOID MY_PLAY0_PROC(VOID)
 
 	//敵１の接触チェック
 
-
+ 
 	if (MY_CHECK_RECT_COLL(PlayerRect, EnemyRect) == TRUE)
 	{
+		mutekicount = 0;
+		heartnow -= 1;
+		IsMuteki = TRUE;
+		heart[heartnow].IsDraw = FALSE;
+	}
 
+
+	if (IsMuteki == TRUE)
+	{
+		mutekicount++;
+		if (mutekicount < 31)
+		{
+			Ishit = FALSE;
+			if (player.IsDraw == TRUE)
+			{
+				player.IsDraw = FALSE;
+			}
+			else if (player.IsDraw == FALSE)
+			{
+				player.IsDraw = TRUE;
+			}
+		}
+		if (mutekicount > 31)
+		{
+			Ishit = TRUE;
+		}
+	}
+
+
+	if (heart[0].IsDraw == FALSE)
+	{
+		if (CheckSoundMem(BGM.handle) != 0)
+		{
+			StopSoundMem(BGM.handle);
+		}
+
+		GameEndKind = GAME_END_FAIL;	//ミッションフォールト！
+
+		GameScene = GAME_SCENE_END;
+
+		return;	//強制的にエンド画面に飛ぶ
 	}
 
 
 	//敵２の接触チェック
 	if (MY_CHECK_RECT_COLL(PlayerRect, Enemy2Rect) == TRUE)
 	{
-		//if (CheckSoundMem(BGM.handle) != 0)
-		//{
-		//	StopSoundMem(BGM.handle);
-		//}
-
-		//GameEndKind = GAME_END_FAIL;	//ミッションフォールト！
-
-		//GameScene = GAME_SCENE_END;
-
-		//return;	//強制的にエンド画面に飛ぶ
-
+		mutekicount = 0;
+		heartnow -= 1;
+		IsMuteki = TRUE;
+		heart[heartnow].IsDraw = FALSE;
 	}
 
 
 	//敵３の接触チェック
 	if (MY_CHECK_RECT_COLL(PlayerRect, Enemy3Rect) == TRUE)
 	{
-		//if (CheckSoundMem(BGM.handle) != 0)
-		//{
-		//	StopSoundMem(BGM.handle);
-		//}
-
-		//GameEndKind = GAME_END_FAIL;	//ミッションフォールト！
-
-		//GameScene = GAME_SCENE_END;
-
-		//return;	//強制的にエンド画面に飛ぶ
+		mutekicount = 0;
+		heartnow -= 1;
+		IsMuteki = TRUE;
+		heart[heartnow].IsDraw = FALSE;
 
 	}
 
@@ -1343,16 +1371,10 @@ VOID MY_PLAY0_PROC(VOID)
 	//敵４の接触チェック
 	if (MY_CHECK_RECT_COLL(PlayerRect, Enemy4Rect) == TRUE)
 	{
-		//if (CheckSoundMem(BGM.handle) != 0)
-		//{
-		//	StopSoundMem(BGM.handle);
-		//}
-
-		//GameEndKind = GAME_END_FAIL;	//ミッションフォールト！
-
-		//GameScene = GAME_SCENE_END;
-
-		//return;	//強制的にエンド画面に飛ぶ
+		mutekicount = 0;
+		heartnow -= 1;
+		IsMuteki = TRUE;
+		heart[heartnow].IsDraw = FALSE;
 
 	}
 
@@ -1665,15 +1687,22 @@ VOID MY_PLAY0_DRAW(VOID)
 	}
 
 
+
 	/*if (MojiDraw == TRUE)
 	{
 		SetFontSize(100);
 		DrawString(300, 500, "敵と同じ色の弾を当てよう", GetColor(255, 255, 255));
 	}*/
+
+	DrawFormatString(600, 0, GetColor(255, 255, 255), "HP:%d",hp);
 	DrawString(0, 0, "A：赤弾", GetColor(255, 255, 255));
 	DrawString(0, 20, "S：緑弾", GetColor(255, 255, 255));
 
-	DrawGraph(player.image.x, player.image.y, player.image.handle, TRUE);
+	if (player.IsDraw == TRUE)
+	{
+		DrawGraph(player.image.x, player.image.y, player.image.handle, TRUE);
+	}
+	
 
 
 	if (enemy.image.IsDraw == TRUE)
@@ -2636,22 +2665,10 @@ VOID MY_PLAY2_PROC(VOID)
 	
 		if (MY_CHECK_RECT_COLL(PlayerRect, SyokushuRect) == TRUE)
 		{
-			player.IsMuteki = TRUE;
-
-
-			/*int i = 0;
-
-			while (i < 3) {
-
-				heart[i].IsDraw = FALSE;
-
-				if (heart[i].IsDraw == FALSE)
-				{
-					i++;
-				}
-
-			}*/
-
+			mutekicount = 0;
+			heartnow -= 1;
+			IsMuteki = TRUE;
+			heart[heartnow].IsDraw = FALSE;
 		}
 
 
@@ -2660,58 +2677,20 @@ VOID MY_PLAY2_PROC(VOID)
 
 		if (MY_CHECK_RECT_COLL(PlayerRect, Syokushu2Rect) == TRUE)
 		{
-			
-
-			if (player.IsMuteki == FALSE)
-			{
-				player.IsMuteki = TRUE;
-			}
-			
-
-			/*heart[heartnow].IsDraw = FALSE;*/
-
+			mutekicount = 0;
+			heartnow -= 1;
+			IsMuteki = TRUE;
+			heart[heartnow].IsDraw = FALSE;
 		}
 
 		
-		if (player.IsMuteki == TRUE)
+		
+		if (IsMuteki == TRUE)
 		{
-
-			switch (heartnow)
+			mutekicount++;
+			if (mutekicount < 31)
 			{
-			case 0:
-				heart[0].IsDraw = FALSE;
-				break;
-
-			case 1:
-				heart[1].IsDraw = FALSE;
-				break;
-
-			case 2:
-				heart[2].IsDraw = FALSE;
-				break;
-
-
-				heartnow -= 1;
-
-			/*default:
-				break;*/
-			}
-		}
-		
-		
-
-
-		if (mutekicount < 32)
-		{
-			if (player.IsMuteki == TRUE)
-			{
-
-				heartnow -= 1;
-				heart[heartnow].IsDraw = FALSE;
-
-		
-				mutekicount += 1;
-				player.Ishit = FALSE;
+				Ishit = FALSE;
 				if (player.IsDraw == TRUE)
 				{
 					player.IsDraw = FALSE;
@@ -2721,49 +2700,26 @@ VOID MY_PLAY2_PROC(VOID)
 					player.IsDraw = TRUE;
 				}
 			}
+			if (mutekicount > 31)
+			{
+				Ishit = TRUE;
+			}
 		}
-		else if(mutekicount == 32)
+
+
+		if (heart[0].IsDraw == FALSE)
 		{
-			mutekicount = 0;
+			if (CheckSoundMem(BGM.handle) != 0)
+			{
+				StopSoundMem(BGM.handle);
+			}
+
+			GameEndKind = GAME_END_FAIL;	//ミッションフォールト！
+
+			GameScene = GAME_SCENE_END;
+
+			return;	//強制的にエンド画面に飛ぶ
 		}
-
-	
-
-
-	
-	
-
-
-	//if (player.Ishit == TRUE && mutekicount == 0)
-	//{
-	//	mutekicount = 31;
-	//}
-	//
-
-	//if (player.IsMuteki == TRUE)
-	//{
-	//	if (mutekicount > 0)
-	//	{
-	//		mutekicount-=1;
-
-	//		if (player.IsDraw == TRUE)
-	//		{
-	//			player.IsDraw = FALSE;
-	//		}
-	//		else if (player.IsDraw == FALSE)
-	//		{
-	//			player.IsDraw = TRUE;
-	//		}
-
-	//		if (mutekicount <= 0)
-	//		{
-	//			mutekicount = 0;
-	//			player.Ishit = FALSE;
-	//		}
-	//	}	
-
-	//}
-
 	
 
 	//プレイヤーが画面外に出たら
@@ -3267,9 +3223,6 @@ VOID MY_END_DRAW(VOID)
 	}
 
 
-
-	DrawString(330, 400, "エンド画面(エスケープキーを押して下さい)", GetColor(255, 255, 255));
-
 	return;
 }
 
@@ -3417,7 +3370,6 @@ BOOL MY_LOAD_IMAGE(VOID)
 	player.CenterY = player.image.y + player.image.height / 2;		//画像の縦の中心を探す
 	player.speed = CHARA_SPEED_LOW;
 	player.IsDraw = TRUE;
-	player.IsMuteki = FALSE;
 
 
 	//敵の配置
@@ -4131,19 +4083,17 @@ BOOL MY_CHECK_MAP1_PLAYER_COLL(RECT player)
 //領域の当たり判定
 BOOL MY_CHECK_RECT_COLL(RECT a, RECT b)
 {
+	
 	if (a.left < b.right &&
 		a.top < b.bottom &&
 		a.right > b.left &&
 		a.bottom > b.top)
 	{
-		
-		return TRUE;
-		player.Ishit = TRUE;
-	
-	}
-	else
-	{
-		player.Ishit = FALSE;
+		if (Ishit == TRUE)
+		{
+			return TRUE;
+		}
+			
 	}
 
 	return FALSE;
