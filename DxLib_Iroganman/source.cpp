@@ -69,9 +69,9 @@
 //ìG
 #define IMAGE_ENEMY_PATH		TEXT(".\\IMAGE\\hitome_red.png")	
 #define IMAGE_ENEMY2_PATH		TEXT(".\\IMAGE\\enemy2.png")
-#define IMAGE_ENEMY3_PATH		TEXT(".\\IMAGE\\pipo-enemy025a.png")
-#define IMAGE_ENEMY4_PATH		TEXT(".\\IMAGE\\pipo-enemy040b.png")
-#define IMAGE_ENEMY5_PATH		TEXT(".\\IMAGE\\pipo-enemy039.png")
+#define IMAGE_ENEMY3_PATH		TEXT(".\\IMAGE\\pipo-enemy012.png")
+#define IMAGE_ENEMY4_PATH		TEXT(".\\IMAGE\\pipo-enemy025a.png")
+#define IMAGE_ENEMY5_PATH		TEXT(".\\IMAGE\\pipo-enemy039a.png")
 
 #define IMAGE_syokusyu_PATH		TEXT(".\\IMAGE\\MAP2\\shokushu.png")
 #define SHOKUSHU_NUM			5
@@ -91,9 +91,10 @@
 #define YERROWWARP_PATH			TEXT(".\\IMAGE\\pipo-mapeffect013a.png")
 
 //Ç”Ç´ÇæÇµ
-#define IMAGE_HUKIDASI_PATH		TEXT(".\\IMAGE\\hukidasi.png")
+#define IMAGE_HUKIDASI_PATH			TEXT(".\\IMAGE\\hukidasi.png")
 #define IMAGE_HUKIDASI2_PATH		TEXT(".\\IMAGE\\êÅÇ´èoÇµÇQ.png")
 #define IMAGE_HUKIDASI3_PATH		TEXT(".\\IMAGE\\MAP2\\window2.png")
+#define IMAGE_HUKIDASI4_PATH		TEXT(".\\IMAGE\\ìGÇ∆ìØÇ∂êF.png")
 
 //ÉGÉäÉA
 #define IMAGE_DENGER_TATE_PATH		TEXT(".\\IMAGE\\MAP2\\denger.tate.png")
@@ -466,6 +467,7 @@ int GameScene;
 int GameEndKind;
 
 
+int st0count = 0.0;
 int enemycount;
 int mutekicount = 0.0;
 int map1count = 0.0;
@@ -475,7 +477,7 @@ int y_warphandle[10];
 
 int heartnow = 2;
 
-
+BOOL MojiDraw = FALSE;
 
 RECT GoalRect = { -1,-1,-1,-1 };
 
@@ -589,8 +591,7 @@ MAP2 map2[GAME_MAP2_TATE_MAX][GAME_MAP2_YOKO_MAX];
 iPOINT startPt2{ -1,-1 };
 
 
-//RECT mapColl[GAME_MAP2_TATE_MAX][GAME_MAP2_YOKO_MAX];
-//í«â¡Ç±Ç±Ç‹Ç≈
+//RECT mapColl[GAME_MAP2_TATE_MAX][GAME_MAP2_YOKO_MAX]
 
 
 
@@ -1020,7 +1021,7 @@ VOID MY_START_PROC(VOID)
 
 		}
 
-
+		//Ç”Ç´ÇæÇµ
 		for (int i = 0; i < 2; i++)
 		{
 			hukidasi[i] = hukidasi[0];
@@ -1032,6 +1033,20 @@ VOID MY_START_PROC(VOID)
 			hukidasi[1].y = 130;
 
 		}
+
+
+		//ìGÇPÇÃîzíu
+		enemy.image.x = 0;
+		enemy.image.y = 200;
+
+
+		//ìGÇQÇÃîzíu
+		enemy2.image.x = 0;
+		enemy2.image.y = 500;
+
+
+
+		gate.y = 340;
 		
 
 
@@ -1114,8 +1129,10 @@ VOID MY_PLAY0(VOID)
 }
 
 
+
 VOID MY_PLAY0_PROC(VOID)
 {
+	st0count++;
 
 	for (int num = 0; num < IMAGE_BACK_NUM; num++)
 	{
@@ -1284,13 +1301,6 @@ VOID MY_PLAY0_PROC(VOID)
 
 	if (MY_CHECK_RECT_COLL(PlayerRect, EnemyRect) == TRUE)
 	{
-		player.IsMuteki = TRUE;
-
-		for (int i = 0; i < HEART_NUM; i++)
-		{
-			heart[i].IsDraw = FALSE;
-
-		}
 
 	}
 
@@ -1298,16 +1308,16 @@ VOID MY_PLAY0_PROC(VOID)
 	//ìGÇQÇÃê⁄êGÉ`ÉFÉbÉN
 	if (MY_CHECK_RECT_COLL(PlayerRect, Enemy2Rect) == TRUE)
 	{
-		if (CheckSoundMem(BGM.handle) != 0)
-		{
-			StopSoundMem(BGM.handle);
-		}
+		//if (CheckSoundMem(BGM.handle) != 0)
+		//{
+		//	StopSoundMem(BGM.handle);
+		//}
 
-		GameEndKind = GAME_END_FAIL;	//É~ÉbÉVÉáÉìÉtÉHÅ[ÉãÉgÅI
+		//GameEndKind = GAME_END_FAIL;	//É~ÉbÉVÉáÉìÉtÉHÅ[ÉãÉgÅI
 
-		GameScene = GAME_SCENE_END;
+		//GameScene = GAME_SCENE_END;
 
-		return;	//ã≠êßìIÇ…ÉGÉìÉhâÊñ Ç…îÚÇ‘
+		//return;	//ã≠êßìIÇ…ÉGÉìÉhâÊñ Ç…îÚÇ‘
 
 	}
 
@@ -1315,16 +1325,16 @@ VOID MY_PLAY0_PROC(VOID)
 	//ìGÇRÇÃê⁄êGÉ`ÉFÉbÉN
 	if (MY_CHECK_RECT_COLL(PlayerRect, Enemy3Rect) == TRUE)
 	{
-		if (CheckSoundMem(BGM.handle) != 0)
-		{
-			StopSoundMem(BGM.handle);
-		}
+		//if (CheckSoundMem(BGM.handle) != 0)
+		//{
+		//	StopSoundMem(BGM.handle);
+		//}
 
-		GameEndKind = GAME_END_FAIL;	//É~ÉbÉVÉáÉìÉtÉHÅ[ÉãÉgÅI
+		//GameEndKind = GAME_END_FAIL;	//É~ÉbÉVÉáÉìÉtÉHÅ[ÉãÉgÅI
 
-		GameScene = GAME_SCENE_END;
+		//GameScene = GAME_SCENE_END;
 
-		return;	//ã≠êßìIÇ…ÉGÉìÉhâÊñ Ç…îÚÇ‘
+		//return;	//ã≠êßìIÇ…ÉGÉìÉhâÊñ Ç…îÚÇ‘
 
 	}
 
@@ -1333,16 +1343,16 @@ VOID MY_PLAY0_PROC(VOID)
 	//ìGÇSÇÃê⁄êGÉ`ÉFÉbÉN
 	if (MY_CHECK_RECT_COLL(PlayerRect, Enemy4Rect) == TRUE)
 	{
-		if (CheckSoundMem(BGM.handle) != 0)
-		{
-			StopSoundMem(BGM.handle);
-		}
+		//if (CheckSoundMem(BGM.handle) != 0)
+		//{
+		//	StopSoundMem(BGM.handle);
+		//}
 
-		GameEndKind = GAME_END_FAIL;	//É~ÉbÉVÉáÉìÉtÉHÅ[ÉãÉgÅI
+		//GameEndKind = GAME_END_FAIL;	//É~ÉbÉVÉáÉìÉtÉHÅ[ÉãÉgÅI
 
-		GameScene = GAME_SCENE_END;
+		//GameScene = GAME_SCENE_END;
 
-		return;	//ã≠êßìIÇ…ÉGÉìÉhâÊñ Ç…îÚÇ‘
+		//return;	//ã≠êßìIÇ…ÉGÉìÉhâÊñ Ç…îÚÇ‘
 
 	}
 
@@ -1351,16 +1361,16 @@ VOID MY_PLAY0_PROC(VOID)
 	//ìGÇTÇÃê⁄êGÉ`ÉFÉbÉN
 	if (MY_CHECK_RECT_COLL(PlayerRect, Enemy5Rect) == TRUE)
 	{
-		if (CheckSoundMem(BGM.handle) != 0)
-		{
-			StopSoundMem(BGM.handle);
-		}
+		//if (CheckSoundMem(BGM.handle) != 0)
+		//{
+		//	StopSoundMem(BGM.handle);
+		//}
 
-		GameEndKind = GAME_END_FAIL;	//É~ÉbÉVÉáÉìÉtÉHÅ[ÉãÉgÅI
+		//GameEndKind = GAME_END_FAIL;	//É~ÉbÉVÉáÉìÉtÉHÅ[ÉãÉgÅI
 
-		GameScene = GAME_SCENE_END;
+		//GameScene = GAME_SCENE_END;
 
-		return;	//ã≠êßìIÇ…ÉGÉìÉhâÊñ Ç…îÚÇ‘
+		//return;	//ã≠êßìIÇ…ÉGÉìÉhâÊñ Ç…îÚÇ‘
 
 	}
 
@@ -1385,13 +1395,11 @@ VOID MY_PLAY0_PROC(VOID)
 
 
 	//ê‘íeÇî≠éÀ
-	if (MY_KEY_DOWN(KEY_INPUT_1) == TRUE)
+	if (MY_KEY_DOWN(KEY_INPUT_A) == TRUE)
 	{
 		if (player.CanShot == TRUE)
 		{
 			PlaySoundMem(player.musicShot.handle, DX_PLAYTYPE_BACK);
-			PlaySoundMem(voice_ei.handle, DX_PLAYTYPE_BACK);
-			ChangeVolumeSoundMem(255 * 150 / 100, voice_ei.handle);
 			player.CanShot = FALSE;
 
 
@@ -1399,9 +1407,9 @@ VOID MY_PLAY0_PROC(VOID)
 			{
 				if (player.tama[cnt].IsDraw == FALSE)
 				{
-					player.tama[cnt].x = player.CenterX - player.tama[cnt].width / 2;
+					player.tama[cnt].x = player.image.x;
 
-					player.tama[cnt].y = player.image.y;
+					player.tama[cnt].y = player.CenterY - player.tama[cnt].height / 2;
 
 					player.tama[cnt].IsDraw = TRUE;
 
@@ -1415,13 +1423,11 @@ VOID MY_PLAY0_PROC(VOID)
 
 
 	//óŒíeÇî≠éÀ
-	if (MY_KEY_DOWN(KEY_INPUT_2) == TRUE)
+	if (MY_KEY_DOWN(KEY_INPUT_S) == TRUE)
 	{
 		if (player.CanShot == TRUE)
 		{
 			PlaySoundMem(player.greenshot.handle, DX_PLAYTYPE_BACK);
-			PlaySoundMem(voice_make.handle, DX_PLAYTYPE_BACK);
-			ChangeVolumeSoundMem(255 * 150 / 100, voice_ei.handle);
 			player.CanShot = FALSE;
 
 
@@ -1444,132 +1450,132 @@ VOID MY_PLAY0_PROC(VOID)
 		}
 	}
 	
-	//ìGÇPÇ∆ê‘íeÇÃìñÇΩÇËîªíË
-	for (int cnt = 0; cnt < TAMA_MAX; cnt++)
-	{
+	////ìGÇPÇ∆ê‘íeÇÃìñÇΩÇËîªíË
+	//for (int cnt = 0; cnt < TAMA_MAX; cnt++)
+	//{
 
-		if (((player.tama[cnt].x > enemy.image.x && player.tama[cnt].x < enemy.image.x + enemy.image.width) ||
-			(enemy.image.x > player.tama[cnt].x && enemy.image.x < player.tama[cnt].x + player.tama[cnt].width)) &&
-			((player.tama[cnt].y > enemy.image.y && player.tama[cnt].y < enemy.image.y + enemy.image.height) ||
-				(enemy.image.y > player.tama[cnt].y && enemy.image.y < player.tama[cnt].y + player.tama[cnt].height)))
-		{
+	//	if (((player.tama[cnt].x > enemy.image.x && player.tama[cnt].x < enemy.image.x + enemy.image.width) ||
+	//		(enemy.image.x > player.tama[cnt].x && enemy.image.x < player.tama[cnt].x + player.tama[cnt].width)) &&
+	//		((player.tama[cnt].y > enemy.image.y && player.tama[cnt].y < enemy.image.y + enemy.image.height) ||
+	//			(enemy.image.y > player.tama[cnt].y && enemy.image.y < player.tama[cnt].y + player.tama[cnt].height)))
+	//	{
 
-			player.tama[cnt].IsDraw = FALSE;
+	//		player.tama[cnt].IsDraw = FALSE;
 
-			PlaySoundMem(gekiha.handle, DX_PLAYTYPE_BACK);
+	//		PlaySoundMem(gekiha.handle, DX_PLAYTYPE_BACK);
 
-			enemy.image.handle = FALSE;
-			enemy.image.width = FALSE;
-			enemy.image.height = FALSE;
-			enemy.image.x = FALSE;
-			enemy.image.y = FALSE;
+	//		enemy.image.handle = FALSE;
+	//		enemy.image.width = FALSE;
+	//		enemy.image.height = FALSE;
+	//		enemy.image.x = FALSE;
+	//		enemy.image.y = FALSE;
 
-			/*break;*/
-		}
+	//		/*break;*/
+	//	}
 
-	}
-
-
-	//ìGÇQÇ∆íeÇQÇÃìñÇΩÇËîªíË
-	for (int cnt = 0; cnt < TAMA_MAX; cnt++)
-	{
-
-		if (((player.tama2[cnt].x > enemy2.image.x && player.tama2[cnt].x < enemy2.image.x + enemy2.image.width) ||
-			(enemy2.image.x > player.tama2[cnt].x && enemy2.image.x < player.tama2[cnt].x + player.tama2[cnt].width)) &&
-			((player.tama2[cnt].y > enemy2.image.y && player.tama2[cnt].y < enemy2.image.y + enemy2.image.height) ||
-				(enemy2.image.y > player.tama2[cnt].y && enemy2.image.y < player.tama2[cnt].y + player.tama2[cnt].height)))
-		{
-
-			player.tama2[cnt].IsDraw = FALSE;
-
-			PlaySoundMem(gekiha.handle, DX_PLAYTYPE_BACK);
-
-			enemy2.image.IsDraw = FALSE;
-			enemy2.image.width = FALSE;
-			enemy2.image.height = FALSE;
-			enemy2.image.x = FALSE;
-			enemy2.image.y = FALSE;
-
-			break;
-		}
-
-	}
+	//}
 
 
-	//ìGÇSÇ∆óŒíeÇÃìñÇΩÇËîªíË
-	for (int cnt = 0; cnt < TAMA_MAX; cnt++)
-	{
+	////ìGÇQÇ∆íeÇQÇÃìñÇΩÇËîªíË
+	//for (int cnt = 0; cnt < TAMA_MAX; cnt++)
+	//{
 
-		if (((player.tama2[cnt].x > enemy4.image.x && player.tama2[cnt].x < enemy4.image.x + enemy4.image.width) ||
-			(enemy4.image.x > player.tama2[cnt].x && enemy4.image.x < player.tama2[cnt].x + player.tama2[cnt].width)) &&
-			((player.tama2[cnt].y > enemy4.image.y && player.tama2[cnt].y < enemy4.image.y + enemy4.image.height) ||
-				(enemy4.image.y > player.tama2[cnt].y && enemy4.image.y < player.tama2[cnt].y + player.tama2[cnt].height)))
-		{
+	//	if (((player.tama2[cnt].x > enemy2.image.x && player.tama2[cnt].x < enemy2.image.x + enemy2.image.width) ||
+	//		(enemy2.image.x > player.tama2[cnt].x && enemy2.image.x < player.tama2[cnt].x + player.tama2[cnt].width)) &&
+	//		((player.tama2[cnt].y > enemy2.image.y && player.tama2[cnt].y < enemy2.image.y + enemy2.image.height) ||
+	//			(enemy2.image.y > player.tama2[cnt].y && enemy2.image.y < player.tama2[cnt].y + player.tama2[cnt].height)))
+	//	{
 
-			player.tama2[cnt].IsDraw = FALSE;
+	//		player.tama2[cnt].IsDraw = FALSE;
 
-			PlaySoundMem(gekiha.handle, DX_PLAYTYPE_BACK);
+	//		PlaySoundMem(gekiha.handle, DX_PLAYTYPE_BACK);
 
-			enemy4.image.IsDraw = FALSE;
-			enemy4.image.width = FALSE;
-			enemy4.image.height = FALSE;
-			enemy4.image.x = FALSE;
-			enemy4.image.y = FALSE;
+	//		enemy2.image.IsDraw = FALSE;
+	//		enemy2.image.width = FALSE;
+	//		enemy2.image.height = FALSE;
+	//		enemy2.image.x = FALSE;
+	//		enemy2.image.y = FALSE;
 
-			break;
-		}
+	//		break;
+	//	}
 
-
-		//ìGÇRÇ∆ê‘íeÇÃìñÇΩÇËîªíË
-		for (int cnt = 0; cnt < TAMA_MAX; cnt++)
-		{
-
-			if (((player.tama[cnt].x > enemy3.image.x && player.tama[cnt].x < enemy3.image.x + enemy3.image.width) ||
-				(enemy3.image.x > player.tama[cnt].x && enemy3.image.x < player.tama[cnt].x + player.tama[cnt].width)) &&
-				((player.tama[cnt].y > enemy3.image.y && player.tama[cnt].y < enemy3.image.y + enemy3.image.height) ||
-					(enemy3.image.y > player.tama[cnt].y && enemy3.image.y < player.tama[cnt].y + player.tama[cnt].height)))
-			{
-
-				player.tama[cnt].IsDraw = FALSE;
-
-				PlaySoundMem(gekiha.handle, DX_PLAYTYPE_BACK);
-
-				enemy3.image.IsDraw = FALSE;
-				enemy3.image.width = FALSE;
-				enemy3.image.height = FALSE;
-				enemy3.image.x = FALSE;
-				enemy3.image.y = FALSE;
-
-				break;
-			}
-		}
+	//}
 
 
-		//ìGÇTÇ∆óŒíeÇÃìñÇΩÇËîªíË
-		for (int cnt = 0; cnt < TAMA_MAX; cnt++)
-		{
+	////ìGÇSÇ∆óŒíeÇÃìñÇΩÇËîªíË
+	//for (int cnt = 0; cnt < TAMA_MAX; cnt++)
+	//{
 
-			if (((player.tama2[cnt].x > enemy5.image.x && player.tama2[cnt].x < enemy5.image.x + enemy5.image.width) ||
-				(enemy5.image.x > player.tama2[cnt].x && enemy5.image.x < player.tama2[cnt].x + player.tama2[cnt].width)) &&
-				((player.tama2[cnt].y > enemy5.image.y && player.tama2[cnt].y < enemy5.image.y + enemy5.image.height) ||
-					(enemy5.image.y > player.tama2[cnt].y && enemy5.image.y < player.tama2[cnt].y + player.tama2[cnt].height)))
-			{
+	//	if (((player.tama2[cnt].x > enemy4.image.x && player.tama2[cnt].x < enemy4.image.x + enemy4.image.width) ||
+	//		(enemy4.image.x > player.tama2[cnt].x && enemy4.image.x < player.tama2[cnt].x + player.tama2[cnt].width)) &&
+	//		((player.tama2[cnt].y > enemy4.image.y && player.tama2[cnt].y < enemy4.image.y + enemy4.image.height) ||
+	//			(enemy4.image.y > player.tama2[cnt].y && enemy4.image.y < player.tama2[cnt].y + player.tama2[cnt].height)))
+	//	{
 
-				player.tama2[cnt].IsDraw = FALSE;
+	//		player.tama2[cnt].IsDraw = FALSE;
 
-				PlaySoundMem(gekiha.handle, DX_PLAYTYPE_BACK);
+	//		PlaySoundMem(gekiha.handle, DX_PLAYTYPE_BACK);
 
-				enemy5.image.IsDraw = FALSE;
-				enemy5.image.width = FALSE;
-				enemy5.image.height = FALSE;
-				enemy5.image.x = FALSE;
-				enemy5.image.y = FALSE;
+	//		enemy4.image.IsDraw = FALSE;
+	//		enemy4.image.width = FALSE;
+	//		enemy4.image.height = FALSE;
+	//		enemy4.image.x = FALSE;
+	//		enemy4.image.y = FALSE;
 
-				break;
-			}
-		}
+	//		break;
+	//	}
 
-	}
+
+	//	//ìGÇRÇ∆ê‘íeÇÃìñÇΩÇËîªíË
+	//	for (int cnt = 0; cnt < TAMA_MAX; cnt++)
+	//	{
+
+	//		if (((player.tama[cnt].x > enemy3.image.x && player.tama[cnt].x < enemy3.image.x + enemy3.image.width) ||
+	//			(enemy3.image.x > player.tama[cnt].x && enemy3.image.x < player.tama[cnt].x + player.tama[cnt].width)) &&
+	//			((player.tama[cnt].y > enemy3.image.y && player.tama[cnt].y < enemy3.image.y + enemy3.image.height) ||
+	//				(enemy3.image.y > player.tama[cnt].y && enemy3.image.y < player.tama[cnt].y + player.tama[cnt].height)))
+	//		{
+
+	//			player.tama[cnt].IsDraw = FALSE;
+
+	//			PlaySoundMem(gekiha.handle, DX_PLAYTYPE_BACK);
+
+	//			enemy3.image.IsDraw = FALSE;
+	//			enemy3.image.width = FALSE;
+	//			enemy3.image.height = FALSE;
+	//			enemy3.image.x = FALSE;
+	//			enemy3.image.y = FALSE;
+
+	//			break;
+	//		}
+	//	}
+
+
+	//	//ìGÇTÇ∆óŒíeÇÃìñÇΩÇËîªíË
+	//	for (int cnt = 0; cnt < TAMA_MAX; cnt++)
+	//	{
+
+	//		if (((player.tama2[cnt].x > enemy5.image.x && player.tama2[cnt].x < enemy5.image.x + enemy5.image.width) ||
+	//			(enemy5.image.x > player.tama2[cnt].x && enemy5.image.x < player.tama2[cnt].x + player.tama2[cnt].width)) &&
+	//			((player.tama2[cnt].y > enemy5.image.y && player.tama2[cnt].y < enemy5.image.y + enemy5.image.height) ||
+	//				(enemy5.image.y > player.tama2[cnt].y && enemy5.image.y < player.tama2[cnt].y + player.tama2[cnt].height)))
+	//		{
+
+	//			player.tama2[cnt].IsDraw = FALSE;
+
+	//			PlaySoundMem(gekiha.handle, DX_PLAYTYPE_BACK);
+
+	//			enemy5.image.IsDraw = FALSE;
+	//			enemy5.image.width = FALSE;
+	//			enemy5.image.height = FALSE;
+	//			enemy5.image.x = FALSE;
+	//			enemy5.image.y = FALSE;
+
+	//			break;
+	//		}
+	//	}
+
+	//}
 
 
 
@@ -1587,30 +1593,62 @@ VOID MY_PLAY0_PROC(VOID)
 
 
 
-	//ìGÇPÇÃîzíu
-	enemy.image.x = 500;
-	enemy.image.y = 200;
 
+	//ìGÇPÇÃà⁄ìÆ
+	if (st0count > 100)
+	{
+		enemy.image.IsDraw = TRUE;
+		enemy.image.x++;
+	}
+	
+	if (st0count > 400)
+	{
+		MojiDraw = TRUE;
+		enemy2.image.IsDraw = TRUE;
+		enemy2.image.x++;
+	}
 
+	
+	enemy3.image.y = 150*sin(enemy3.image.radian);
+	enemy3.image.radian += 0.02;
 
-	//ìGÇQÇÃîzíu
-	enemy2.image.x = GAME_WIDTH / 1.8;
-	enemy2.image.y = GAME_HEIGHT / 8.5;
+	if (st0count > 700)
+	{
+		enemy3.image.IsDraw = TRUE;
+		enemy3.image.x++;
+		
+	}
 
-
-	enemy3.image.x = GAME_WIDTH / 8 + GAME_HANKEI * sin(enemy3.image.radian) / 1.3;
-	enemy3.image.y = GAME_HEIGHT / 6 - enemy3.image.width / 2; GAME_HANKEI* sin(enemy3.image.radian);
-	enemy3.image.radian += 0.04;
-
-	enemy4.image.x = GAME_WIDTH / 2.5 - GAME_HANKEI * sin(enemy4.image.radian) / 1.5;
-	enemy4.image.y = GAME_HEIGHT / 1.6 - enemy4.image.width / 2; GAME_HANKEI* sin(enemy4.image.radian);
+	enemy4.image.y = 500 + 100 * sin(enemy4.image.radian);
 	enemy4.image.radian += 0.02;
 
 
-	enemy5.image.x = GAME_WIDTH / 10 - GAME_HANKEI * sin(enemy5.image.radian) / 6;
-	enemy5.image.y = GAME_HEIGHT / 1.2 - enemy5.image.width / 2; GAME_HANKEI* sin(enemy5.image.radian);
-	enemy5.image.radian += 0.01;
+	if (st0count > 1000)
+	{
+		enemy4.image.IsDraw = TRUE;
+		enemy4.image.x++;
+
+	}
+
+	enemy5.image.y = 200 + 70 * sin(enemy5.image.radian);
+	enemy5.image.radian += 0.02;
+	if (st0count > 1300)
+	{
+		enemy5.image.IsDraw = TRUE;
+		enemy5.image.x++;
+
+	}
+
+
 	
+	if (st0count > 1800)
+	{
+		gate.IsDraw = TRUE;
+		if (st0count < 2150)
+		{
+			gate.x++;
+		}
+	}
 
 
 }
@@ -1625,6 +1663,15 @@ VOID MY_PLAY0_DRAW(VOID)
 
 		}
 	}
+
+
+	/*if (MojiDraw == TRUE)
+	{
+		SetFontSize(100);
+		DrawString(300, 500, "ìGÇ∆ìØÇ∂êFÇÃíeÇìñÇƒÇÊÇ§", GetColor(255, 255, 255));
+	}*/
+	DrawString(0, 0, "AÅFê‘íe", GetColor(255, 255, 255));
+	DrawString(0, 20, "SÅFóŒíe", GetColor(255, 255, 255));
 
 	DrawGraph(player.image.x, player.image.y, player.image.handle, TRUE);
 
@@ -2654,7 +2701,7 @@ VOID MY_PLAY2_PROC(VOID)
 		
 
 
-		/*if (mutekicount < 32)
+		if (mutekicount < 32)
 		{
 			if (player.IsMuteki == TRUE)
 			{
@@ -2678,7 +2725,7 @@ VOID MY_PLAY2_PROC(VOID)
 		else if(mutekicount == 32)
 		{
 			mutekicount = 0;
-		}*/
+		}
 
 	
 
@@ -2846,7 +2893,7 @@ VOID MY_PLAY2_PROC(VOID)
 	if (enemycount > 600)
 	{
 			syokusyu[0].IsDraw = TRUE;
-			syokusyu[0].x -= 10;				
+			syokusyu[0].x -= 10;
 	}
 
 
@@ -3386,7 +3433,7 @@ BOOL MY_LOAD_IMAGE(VOID)
 	enemy.radian = 0.0;
 	enemycount = 0.0;
 	enemy.speed = CHARA_SPEED_LOW;
-	enemy.image.IsDraw = TRUE;
+	enemy.image.IsDraw = FALSE;
 
 
 
@@ -3401,7 +3448,7 @@ BOOL MY_LOAD_IMAGE(VOID)
 
 	enemy2.radian = 0.0;
 	enemy2.speed = CHARA_SPEED_LOW;
-	enemy2.image.IsDraw = TRUE;
+	enemy2.image.IsDraw = FALSE;
 
 
 
@@ -3416,7 +3463,7 @@ BOOL MY_LOAD_IMAGE(VOID)
 
 	enemy3.radian = 0.0;
 	enemy3.speed = CHARA_SPEED_LOW;
-	enemy3.image.IsDraw = TRUE;
+	enemy3.image.IsDraw = FALSE;
 
 
 
@@ -3431,7 +3478,7 @@ BOOL MY_LOAD_IMAGE(VOID)
 
 	enemy4.radian = 0.0;
 	enemy4.speed = CHARA_SPEED_LOW;
-	enemy4.image.IsDraw = TRUE;
+	enemy4.image.IsDraw = FALSE;
 
 
 
@@ -3446,7 +3493,7 @@ BOOL MY_LOAD_IMAGE(VOID)
 
 	enemy5.radian = 0.0;
 	enemy5.speed = CHARA_SPEED_LOW;
-	enemy5.image.IsDraw = TRUE;
+	enemy5.image.IsDraw = FALSE;
 
 
 	//êGéË
@@ -3600,7 +3647,7 @@ BOOL MY_LOAD_IMAGE(VOID)
 		return FALSE;
 	}
 	GetGraphSize(gate.handle, &gate.width, &gate.height);
-	gate.IsDraw = TRUE;
+	gate.IsDraw = FALSE;
 
 
 
