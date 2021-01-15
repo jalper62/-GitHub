@@ -105,9 +105,9 @@
 
 //ふきだし
 #define IMAGE_HUKIDASI_PATH			TEXT(".\\IMAGE\\hukidasi.png")
-#define IMAGE_HUKIDASI2_PATH		TEXT(".\\IMAGE\\吹き出し２.png")
+#define IMAGE_HUKIDASI2_PATH		TEXT(".\\IMAGE\\window.png")
 #define IMAGE_HUKIDASI3_PATH		TEXT(".\\IMAGE\\MAP2\\window2.png")
-#define IMAGE_HUKIDASI4_PATH		TEXT(".\\IMAGE\\敵と同じ色.png")
+#define IMAGE_YAJIRUSI_PATH			TEXT(".\\IMAGE\\yajirusi.png")
 #define HUKIDASI_NUM				5
 
 //エリア
@@ -489,7 +489,7 @@ int GameScene;
 
 int GameEndKind;
 
-
+//カウント
 int st0count = 0.0;
 int enemycount = 0.0;
 int mutekicount = 0.0;
@@ -498,18 +498,40 @@ int tamacount = 0.0;
 int leftcount = 1;
 int rightcount = 0;
 int bootscount;
+int Redstcount;
+int windowcount;
+
+
 int enemyHP = 100;
 int enemy2HP = 100;
 int enemy3HP = 100;
 int enemy4HP = 100;
 
 
+
 int muki = 3;
+
+
+//フラグ
 int hidariflag = FALSE;
 int migiflag = FALSE;
 int stopflag = FALSE;
 int y_crystal_Flag = FALSE;
+int RedStIn = FALSE;
+int FirstStIn = FALSE;
+int MirrowIn = FALSE;
 
+//ウィンドウ
+int EnterDraw = FALSE;
+int setumei2 = FALSE;
+int setumei3 = FALSE;
+int setumei4 = FALSE;
+int setumei5 = FALSE;
+int setumei6 = FALSE;
+int warptext = FALSE;
+int warptext2 = FALSE;
+BOOL MojiDraw = FALSE;
+BOOL MojiDraw2 = FALSE;
 
 
 int warphandle[10];
@@ -527,7 +549,6 @@ int hp = 500;
 BOOL IsMuteki = FALSE;
 BOOL Ishit = TRUE;
 BOOL Sousa = TRUE;
-BOOL MojiDraw = FALSE;
 BOOL IsDrawBox_y = FALSE;
 BOOL IsDrawBox_r = FALSE;
 
@@ -577,6 +598,7 @@ IMAGE gate[GATE_NUM];
 IMAGE hukidasi[HUKIDASI_NUM];
 IMAGE hukidasi2;
 IMAGE hukidasi3;
+IMAGE yajirusi;
 
 ANIME y_warp;
 ANIME b_warp;
@@ -606,10 +628,10 @@ GAME_MAP_KIND mapData[GAME_MAP_TATE_MAX][GAME_MAP_YOKO_MAX]{
 	k,t,t,t,t,k,t,t,t,k,t,t,t,t,k,
 	k,t,t,t,t,k,t,t,t,k,t,t,t,t,k,
 	k,k,k,k,k,k,t,t,t,k,k,k,k,k,k,
-	k,t,t,t,k,t,t,t,t,t,k,t,t,t,k,
-	k,t,t,t,k,t,t,t,t,t,k,t,t,t,k,
-	k,t,t,t,k,t,t,t,t,t,k,t,t,t,k,
-	k,k,k,k,k,k,k,k,k,k,k,k,t,k,k
+	k,t,t,t,k,t,t,t,t,t,k,k,k,t,k,
+	k,t,t,t,k,t,t,t,t,t,t,t,k,t,k,
+	k,t,t,t,k,t,t,t,t,t,t,t,k,t,k,
+	k,k,k,k,k,k,k,k,k,k,k,k,k,k,k
 
 };
 
@@ -1051,6 +1073,9 @@ VOID MY_START_PROC(VOID)
 
 		SetMouseDispFlag(FALSE);
 
+		st0count = 0;
+		FirstStIn = TRUE;
+
 		player.CenterX = 700;
 		player.CenterY = 300;
 
@@ -1156,17 +1181,21 @@ VOID MY_START_PROC(VOID)
 
 
 		
-		/*gate.x = -100;
-		gate.y = 340;*/
+		
 
 
-		//テスト用
+		
 
 		for (int i = 0; i < GATE_NUM; i++)
 		{
 			gate[i] = gate[0];
 
-			gate[0].x = 300;
+			//テスト用
+			/*gate[0].x = 300;
+			gate[0].y = 340;*/
+
+			//本番用
+			gate[0].x = -100;
 			gate[0].y = 340;
 		}
 
@@ -1277,7 +1306,6 @@ VOID MY_PLAY0(VOID)
 
 VOID MY_PLAY0_PROC(VOID)
 {
-	st0count++;
 
 	for (int num = 0; num < IMAGE_BACK_NUM; num++)
 	{
@@ -2119,15 +2147,97 @@ VOID MY_PLAY0_PROC(VOID)
 
 
 
+	//ステージ構成
+
+	if (FirstStIn == TRUE)
+	{
+		st0count++;
+	}
+
+	hukidasi2.x = 150;
+	hukidasi2.y = 500;
+
+	yajirusi.x = 100;
+	yajirusi.y = 100;
 	
 	//テキスト表示
+
+	//1回目
 	if (st0count == 50)
 	{
+		FirstStIn = FALSE;
+		hukidasi2.IsDraw = TRUE;
 		MojiDraw = TRUE;
+
+		if (windowcount < 80)
+		{
+			windowcount++;
+		}
+
+		if (windowcount == 80)
+		{
+			EnterDraw = TRUE;
+		}
+
+		if (EnterDraw == TRUE)
+		{
+			if (MY_KEY_DOWN(KEY_INPUT_RETURN) == TRUE)
+			{
+				st0count += 1;
+				windowcount = 0;
+				EnterDraw = FALSE;
+			}
+		}
+		
 	}
-	if (st0count == 300)
+	//２回目
+	if (st0count == 51)
 	{
 		MojiDraw = FALSE;
+		setumei2 = TRUE;
+		yajirusi.IsDraw = TRUE;
+		if (windowcount < 80)
+		{
+			windowcount++;
+		}
+		if (windowcount == 80)
+		{
+			EnterDraw = TRUE;
+		}
+		if (EnterDraw == TRUE)
+		{
+			if (MY_KEY_DOWN(KEY_INPUT_RETURN) == TRUE)
+			{
+				st0count += 1;
+				windowcount = 0;
+				EnterDraw = FALSE;
+			}
+		}
+	}
+	//3回目
+	if (st0count == 52)
+	{
+		setumei2 = FALSE;
+		yajirusi.IsDraw = FALSE;
+		setumei3 = TRUE;
+		if (windowcount < 80)
+		{
+			windowcount++;
+		}
+		if (windowcount == 80)
+		{
+			EnterDraw = TRUE;
+		}
+		if (EnterDraw == TRUE)
+		{
+			if (MY_KEY_DOWN(KEY_INPUT_RETURN) == TRUE)
+			{
+				FirstStIn = TRUE;
+				setumei3 = FALSE;
+				hukidasi2.IsDraw = FALSE;
+				EnterDraw = FALSE;
+			}
+		}
 	}
 
 
@@ -2232,7 +2342,7 @@ VOID MY_PLAY0_PROC(VOID)
 
 	enemy6[0].image.y = 200 + 70 * sin(enemy6[0].image.radian);
 	enemy6[0].image.radian += 0.02;
-	if (st0count > 2800)
+	if (st0count > 3100)
 	{
 		if (enemy6[0].image.x < 1200)
 		{
@@ -2243,7 +2353,7 @@ VOID MY_PLAY0_PROC(VOID)
 
 	enemy6[1].image.y = 200 + 70 * sin(enemy6[1].image.radian);
 	enemy6[1].image.radian += 0.02;
-	if (st0count > 3200)
+	if (st0count > 3600)
 	{
 		if (enemy6[1].image.x < 1200)
 		{
@@ -2254,7 +2364,7 @@ VOID MY_PLAY0_PROC(VOID)
 
 	enemy6[2].image.y = 150 + 70 * sin(enemy6[2].image.radian);
 	enemy6[2].image.radian += 0.02;
-	if (st0count > 3500)
+	if (st0count > 4100)
 	{
 		if (enemy6[2].image.x < 1200)
 		{
@@ -2265,7 +2375,7 @@ VOID MY_PLAY0_PROC(VOID)
 
 	enemy6[3].image.y = 300 - 70 * sin(enemy6[3].image.radian);
 	enemy6[3].image.radian += 0.02;
-	if (st0count > 3500)
+	if (st0count > 4100)
 	{
 		if (enemy6[3].image.x < 1200)
 		{
@@ -2274,19 +2384,20 @@ VOID MY_PLAY0_PROC(VOID)
 	}
 
 
-
 	
-	if (st0count > 4000)
+	if (st0count > 4900)
 	{
 		gate[0].IsDraw = TRUE;
-		if (st0count < 4350)
+		if (st0count < 5150)
 		{
 			gate[0].x++;
 		}
 	}
 
 
+
 }
+
 
 VOID MY_PLAY0_DRAW(VOID)
 {
@@ -2295,16 +2406,48 @@ VOID MY_PLAY0_DRAW(VOID)
 		if (ImageBack[num].IsDraw == TRUE)
 		{
 			DrawGraph(ImageBack[num].image.x, ImageBack[num].image.y, ImageBack[num].image.handle, TRUE);
-
 		}
 	}
 
 
+	DrawFormatString(600, 0, GetColor(255, 255, 255), "count:%d", st0count);
+	DrawFormatString(600, 20, GetColor(255, 255, 255), "count:%d", windowcount);
+
+
+	if (hukidasi2.IsDraw == TRUE)
+	{
+		DrawGraph(hukidasi2.x, hukidasi2.y, hukidasi2.handle, TRUE);
+	}
+
+	SetFontSize(20);
+
+
+	if (EnterDraw == TRUE)
+	{
+		DrawString(700, 580, "ENTER", GetColor(255, 255, 255));
+	}
 
 	if (MojiDraw == TRUE)
 	{
-		DrawString(300, 500, "敵と同じ色の弾を当てよう", GetColor(255, 255, 255));
+		DrawString(230, 520, "敵と同じ色の弾を当てることで、敵を倒すことが\nできるぞ！", GetColor(255, 255, 255));
 	}
+
+	if (setumei2 == TRUE)
+	{
+		DrawString(230, 520, "弾の発射方法はここを確認", GetColor(255, 255, 255));
+	}
+
+	if (setumei3 == TRUE)
+	{
+		DrawString(230, 520, "ハートが全て無くなったらゲームオーバーだ", GetColor(255, 255, 255));
+	}
+
+	if (yajirusi.IsDraw == TRUE)
+	{
+		DrawGraph(yajirusi.x, yajirusi.y, yajirusi.handle, TRUE);
+	}
+
+
 
 	/*DrawFormatString(600, 0, GetColor(255, 255, 255), "HP:%d",hp);*/
 	DrawString(0, 0, "A：赤弾", GetColor(255, 255, 255));
@@ -2317,7 +2460,6 @@ VOID MY_PLAY0_DRAW(VOID)
 		DrawGraph(player.image.x, player.image.y, player.image.handle, TRUE);
 	}*/
 
-	//追加
 
 	
 
@@ -2587,16 +2729,17 @@ VOID MY_PLAY0_DRAW(VOID)
 				player.tama[cnt].changeImageCnt = 0;
 			}
 
-			if (player.tama[cnt].x < 0)
+			if (player.tama[cnt].x < player.CenterX - 250)
 			{
 				player.tama[cnt].IsDraw = FALSE;
 				player.tama[cnt].y = 1000;
 			}
 			else
 			{
-					player.tama[cnt].x -= player.tama[cnt].speed;	
-				
+				player.tama[cnt].x -= player.tama[cnt].speed;
+
 			}
+			
 		}
 	}
 
@@ -2637,14 +2780,15 @@ VOID MY_PLAY0_DRAW(VOID)
 				player.tama2[cnt].changeImageCnt = 0;
 			}
 
-			if (player.tama2[cnt].x < 0)
+			if (player.tama2[cnt].x < player.CenterX - 250)
 			{
 				player.tama2[cnt].IsDraw = FALSE;
 				player.tama2[cnt].y = 1000;
 			}
 			else
 			{
-				player.tama2[cnt].x -= player.tama2[cnt].speed;				
+				player.tama2[cnt].x -= player.tama2[cnt].speed;
+
 			}
 		}
 	}
@@ -2688,7 +2832,7 @@ VOID MY_PLAY0_DRAW(VOID)
 				player.b_tama[cnt].changeImageCnt = 0;
 			}
 
-			if (player.b_tama[cnt].x < 0)
+			if (player.b_tama[cnt].x < player.CenterX - 250)
 			{
 				player.b_tama[cnt].IsDraw = FALSE;
 				player.b_tama[cnt].y = 1000;
@@ -2736,7 +2880,7 @@ VOID MY_PLAY0_DRAW(VOID)
 				player.y_tama[cnt].changeImageCnt = 0;
 			}
 
-			if (player.y_tama[cnt].x < 0)
+			if (player.y_tama[cnt].x < player.CenterX - 250)
 			{
 				player.y_tama[cnt].IsDraw = FALSE;
 				player.y_tama[cnt].y = 1000;
@@ -2841,7 +2985,7 @@ VOID MY_PLAY_PROC(VOID)
 	//マップとプレイヤーの当たり判定設定
 	player.coll.left = player.CenterX - mapChip.width / 2 + 5;
 	player.coll.top = player.CenterY - mapChip.height / 2 + 5;
-	player.coll.right = player.CenterX + mapChip.width / 2 - 5;
+	player.coll.right = player.CenterX + mapChip.width / 2 - 5; 
 	player.coll.bottom = player.CenterY + mapChip.height / 2 - 5;
 
 
@@ -2970,6 +3114,8 @@ VOID MY_PLAY_PROC(VOID)
 		if (MY_KEY_DOWN(KEY_INPUT_SPACE) == TRUE)
 		{
 			hukidasi2.IsDraw = TRUE;
+			warptext = TRUE;
+			EnterDraw = TRUE;
 			Sousa = FALSE;
 		}
 		else if (hukidasi2.IsDraw == TRUE)
@@ -2977,6 +3123,8 @@ VOID MY_PLAY_PROC(VOID)
 			if (MY_KEY_DOWN(KEY_INPUT_RETURN) == TRUE)
 			{
 				hukidasi2.IsDraw = FALSE;
+				warptext = FALSE;
+				EnterDraw = FALSE;
 				Sousa = TRUE;
 			}
 		}
@@ -3056,7 +3204,7 @@ VOID MY_PLAY_PROC(VOID)
 
 				syokusyu[7].x = 900;
 				syokusyu[7].y = 200;
-
+				
 				syokusyu[8].x = 900;
 				syokusyu[8].y = 400;
 
@@ -3220,6 +3368,13 @@ VOID MY_PLAY_PROC(VOID)
 			player.image.x = player.CenterX;
 			player.image.y = player.CenterY;
 
+			enemy3.image.x = -150;
+
+			Sousa = FALSE;
+
+			RedStIn = TRUE;
+			MirrowIn = TRUE;
+
 			GameScene = GAME_SCENE_RED;
 
 			return;
@@ -3281,8 +3436,9 @@ VOID MY_PLAY_PROC(VOID)
 	b_warp.y = 100;
 
 
-	kaihuku.x = 500;
-	kaihuku.y = 200;
+	kaihuku.x = 700;
+	kaihuku.y = 500 - 10 * sin(kaihuku.radian);
+	kaihuku.radian += 0.04;
 
 
 	hukidasi2.x = 150;
@@ -3311,6 +3467,7 @@ VOID MY_PLAY_DRAW(VOID)
 		}
 	}
 
+	
 
 	if (kaihuku.IsDraw == TRUE)
 	{
@@ -3462,6 +3619,23 @@ VOID MY_PLAY_DRAW(VOID)
 	if (hukidasi2.IsDraw == TRUE)
 	{
 		DrawGraph(hukidasi2.x, hukidasi2.y, hukidasi2.handle, TRUE);
+	}
+
+
+	if (warptext == TRUE)
+	{
+		DrawString(230, 520, "ワープホールだ。不思議なエネルギーで中に入ることが\nできない。エネルギーを消すには黄色と青色のクリスタル\nを破壊する必要がありそうだ。", GetColor(255, 255, 255));
+	}
+
+	/*if (warptext2 == TRUE)
+	{
+		DrawString(230, 520, "エネルギーを消すには\n黄色と青色のクリスタルを破壊する必要がありそうだ。", GetColor(255, 255, 255));
+	}*/
+
+
+	if (EnterDraw == TRUE)
+	{
+		DrawString(700, 580, "ENTER", GetColor(255, 255, 255));
 	}
 
 
@@ -4170,7 +4344,7 @@ VOID MY_PLAY2_PROC(VOID)
 
 
 	//イエロークリスタル出現
-	if (enemycount > 10)
+	if (enemycount > 5600)
 	{
 		if (y_crystal.x < 400)
 		{
@@ -4273,13 +4447,22 @@ VOID MY_PLAY2_DRAW(VOID)
 		
 
 	
-	for (int i = 0; i < HEART_NUM; i++)
+	if (heartnow > 0)
 	{
-		if (heart[i].IsDraw == TRUE)
+		DrawGraph(heart[0].x, heart[0].y, heart[0].handle, TRUE);
+
+		if (heartnow > 1)
 		{
-			DrawGraph(heart[i].x, heart[i].y, heart[i].handle, TRUE);
+			DrawGraph(heart[1].x, heart[1].y, heart[1].handle, TRUE);
+
+			if (heartnow > 2)
+			{
+				DrawGraph(heart[2].x, heart[2].y, heart[2].handle, TRUE);
+			}
 		}
+
 	}
+
 
 	if (y_crystal.IsDraw == TRUE)
 	{
@@ -4287,13 +4470,12 @@ VOID MY_PLAY2_DRAW(VOID)
 	}
 
 
-	for (int i = 0; i < GATE_NUM; i++)
-	{
-		if (gate[i].IsDraw == TRUE)
+	
+		if (gate[1].IsDraw == TRUE)
 		{
-			DrawGraph(gate[i].x, gate[i].y, gate[i].handle, TRUE);
+			DrawGraph(gate[1].x, gate[1].y, gate[1].handle, TRUE);
 		}
-	}
+	
 
 
 
@@ -4640,6 +4822,7 @@ VOID MY_RED(VOID)
 
 VOID MY_RED_PROC(VOID)
 {
+
 	for (int num = 0; num < IMAGE_BACK_NUM; num++)
 	{
 		ImageBack[num].image.x++;
@@ -4705,23 +4888,26 @@ VOID MY_RED_PROC(VOID)
 
 	//プレイヤーの速度&キー操作設定
 
-	player.speed = 4;
-	if (MY_KEY_DOWN(KEY_INPUT_UP) == TRUE)
+	if (Sousa == TRUE)
 	{
-		player.CenterY -= player.speed;
+		if (MY_KEY_DOWN(KEY_INPUT_UP) == TRUE)
+		{
+			player.CenterY -= player.speed;
+		}
+		if (MY_KEY_DOWN(KEY_INPUT_DOWN) == TRUE)
+		{
+			player.CenterY += player.speed;
+		}
+		if (MY_KEY_DOWN(KEY_INPUT_LEFT) == TRUE)
+		{
+			player.CenterX -= player.speed;
+		}
+		if (MY_KEY_DOWN(KEY_INPUT_RIGHT) == TRUE)
+		{
+			player.CenterX += player.speed;
+		}
 	}
-	if (MY_KEY_DOWN(KEY_INPUT_DOWN) == TRUE)
-	{
-		player.CenterY += player.speed;
-	}
-	if (MY_KEY_DOWN(KEY_INPUT_LEFT) == TRUE)
-	{
-		player.CenterX -= player.speed;
-	}
-	if (MY_KEY_DOWN(KEY_INPUT_RIGHT) == TRUE)
-	{
-		player.CenterX += player.speed;
-	}
+	
 
 
 	BOOL IsMove = TRUE;
@@ -4881,8 +5067,60 @@ VOID MY_RED_PROC(VOID)
 	}
 
 
-	enemy3.image.x = 100;
-	enemy3.image.y = 100;
+
+
+	//ステージ構成
+
+	if (RedStIn == TRUE)
+	{
+		Redstcount++;
+	}
+
+	if (MirrowIn == TRUE)
+	{
+		if (enemy3.image.x < 30)
+		{
+			enemy3.image.x++;
+		}
+	}
+	
+
+	enemy3.image.y = 200 + 70 * sin(enemy3.image.radian);
+	enemy3.image.radian += 0.02;
+
+
+	if (Redstcount == 200)
+	{
+		RedStIn = FALSE;
+		MojiDraw2 = TRUE;
+	}
+
+	if (MojiDraw2 == TRUE)
+	{
+		if (MY_KEY_DOWN(KEY_INPUT_RETURN) == TRUE)
+		{
+			Sousa = TRUE;
+			MojiDraw2 = FALSE;
+			RedStIn = TRUE;
+			MirrowIn = FALSE;
+		}	
+	}
+
+
+
+		if (MirrowIn == FALSE)
+		{
+			if (enemy3.image.x > -300)
+			{
+				enemy3.image.x -= 2;
+			}		
+		}	
+
+
+		if (enemy3.image.x == 300)
+		{
+
+		}
 
 
 	return;
@@ -4906,6 +5144,11 @@ VOID MY_RED_DRAW(VOID)
 			DrawGraph(heart[i].x, heart[i].y, heart[i].handle, TRUE);
 		}
 	}
+
+
+	
+	DrawFormatString(600, 0, GetColor(255, 255, 255), "count:%d", Redstcount);
+
 
 	//プレイヤー描画
 	if (MY_KEY_DOWN(KEY_INPUT_LEFT) == TRUE)
@@ -4971,6 +5214,17 @@ VOID MY_RED_DRAW(VOID)
 	}
 
 
+
+	//文字
+	if (MojiDraw2 == TRUE)
+	{
+		DrawString(30, 500, "鏡が繰り出してくる炎には色がある。\nその繰り出してくる色の順番に、鏡に弾を当てることでダメージを与えることができるぞ！", GetColor(255, 255, 255));
+
+	}
+
+
+
+	//弾
 	for (int cnt = 0; cnt < TAMA_MAX; cnt++)
 	{
 		if (player.tama[cnt].IsDraw == TRUE)
@@ -5694,6 +5948,17 @@ BOOL MY_LOAD_IMAGE(VOID)
 	hukidasi3.IsDraw = FALSE;
 
 
+	//矢印
+	strcpy_s(yajirusi.path, IMAGE_YAJIRUSI_PATH);
+	yajirusi.handle = LoadGraph(yajirusi.path);
+	if (yajirusi.handle == -1)
+	{
+		MessageBox(GetMainWindowHandle(), IMAGE_YAJIRUSI_PATH, IMAGE_LOAD_ERR_TITLE, MB_OK);
+		return FALSE;
+	}
+	GetGraphSize(yajirusi.handle, &yajirusi.width, &yajirusi.height);
+	yajirusi.IsDraw = FALSE;
+
 
 	strcpy_s(goalgazou.path, IMAGE_GOAL_PATH);
 	goalgazou.handle = LoadGraph(goalgazou.path);
@@ -6107,6 +6372,7 @@ VOID MY_DELETE_IMAGE(VOID)
 	
 	DeleteGraph(hukidasi2.handle);
 	DeleteGraph(hukidasi3.handle);
+	DeleteGraph(yajirusi.handle);
 	
 
 	for (int i = 0; i < SHOKUSHU_NUM; i++)
