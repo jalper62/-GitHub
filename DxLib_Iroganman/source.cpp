@@ -69,8 +69,8 @@
 //敵
 #define ENEMY_PATH		TEXT(".\\IMAGE\\ENEMY\\hitome_color.png")
 #define ENEMY2_PATH		TEXT(".\\IMAGE\\ENEMY\\bomb_color.png")
-#define IMAGE_ENEMY3_PATH		TEXT(".\\IMAGE\\ENEMY\\mirror.png")
-//#define IMAGE_ENEMY4_PATH		TEXT(".\\IMAGE\\pipo-enemy025a.png")
+#define IMAGE_ENEMY3_PATH		TEXT(".\\IMAGE\\ENEMY\\wheel.png")
+#define IMAGE_ENEMYFIRE_PATH		TEXT(".\\IMAGE\\ENEMY\\el_fire.png")
 //#define IMAGE_ENEMY5_PATH		TEXT(".\\IMAGE\\pipo-enemy039a.png")
 
 
@@ -90,7 +90,7 @@
 
 
 
-//ギミック
+//◆ギミック◆
 
 //ワープゲート
 #define IMAGE_WARP_PATH			TEXT(".\\IMAGE\\warp.png")
@@ -126,21 +126,26 @@
 
 //ハート
 #define IMAGE_KAIHUKU_PATH			TEXT(".\\IMAGE\\heart_item.png")
+//ポーション
+#define IMAGE_PORTION_PATH			TEXT(".\\IMAGE\\portion.png")
 
 
 //ゴール
 #define IMAGE_GOAL_PATH			TEXT(".\\IMAGE\\takara.png")
 
 
-//弾
+//【弾】
+
 #define TAMA_CHANGE_MAX 5
 #define TAMA_MAX 16
 
+//各色の弾画像
 #define TAMA_RED_PATH		TEXT(".\\IMAGE\\TAMA\\red.png")
 #define TAMA_GREEN_PATH		TEXT(".\\IMAGE\\TAMA\\green.png")
 #define TAMA_BLUE_PATH		TEXT(".\\IMAGE\\TAMA\\blue.png")
 #define TAMA_YELLOW_PATH		TEXT(".\\IMAGE\\TAMA\\yellow.png")
 
+//画像分割詳細
 #define TAMA_DIV_WIDTH		16
 #define TAMA_DIV_HEIGHT		16
 
@@ -151,13 +156,15 @@
 
 
 
-//音楽
+//◆音楽◆
 #define MUSIC_LOAD_ERR_TITLE	TEXT("音楽読み込みエラー")
 
+//シーンBGM
 #define MUSIC_BGM_PATH			TEXT(".\\MUSIC\\game_maoudamashii_1_battle36.mp3")
 #define MUSIC_STARTBGM_PATH		TEXT(".\\MUSIC\\game_maoudamashii_5_town18.mp3")
 #define MUSIC_ENDBGM_PATH		TEXT(".\\MUSIC\\game_maoudamashii_7_event37.mp3")
 
+//弾の発射音
 #define MUSIC_PLAYER_SHOT_PATH	TEXT(".\\MUSIC\\se_maoudamashii_explosion06.mp3")
 #define MUSIC_GREEN_SHOT_PATH	TEXT(".\\MUSIC\\se_zuzaan.mp3")
 
@@ -169,13 +176,18 @@
 #define MUSIC_GOAL_PATH			TEXT(".\\MUSIC\\jump02.mp3")
 #define MUSIC_GAMEOVER_PATH		TEXT(".\\MUSIC\\requiem2.mp3")
 
-#define MUSIC_VOICE_PATH		TEXT(".\\MUSIC\\line-girl1-ei1.mp3")
-#define MUSIC_VOICE2_PATH		TEXT(".\\MUSIC\\line-girl1-yaa2.mp3")
+//敵関連
 #define MUSIC_GEKIHA_PATH		TEXT(".\\MUSIC\\monster5.mp3")
+#define MUSIC_SYOKUSYU_PATH		TEXT(".\\MUSIC\\.mp3")
+
+//その他
+#define MUSIC_KAIHUKU_PATH		TEXT(".\\MUSIC\\.mp3")
+#define MUSIC_WARP_PATH		TEXT(".\\MUSIC\\.mp3")
+#define MUSIC_DAMAGE_PATH		TEXT(".\\MUSIC\\.mp3")
 
 
 
-//マップ
+// ◆マップ◆
 #define GAME_MAP_TATE_MAX 10
 #define GAME_MAP_YOKO_MAX 15
 #define GEME_MAP_KIND_MAX 2
@@ -280,6 +292,10 @@ enum CHARA_RELOAD {
 	CHARA_RELOAD_HIGH = 15
 };
 
+enum TAMA_HIKYORI {
+	TAMA_HIKYORI_LONG = 400
+};
+
 typedef struct STRUCT_I_POINT
 {
 	int x = -1;
@@ -334,6 +350,7 @@ typedef struct STRUCT_ENEMY
 	BOOL IsDraw;
 	int speed;
 	double radian;
+	int hp = 100;
 
 	/*int CenterX;
 	int CenterY;*/
@@ -492,14 +509,17 @@ int GameEndKind;
 //カウント
 int st0count = 0.0;
 int enemycount = 0.0;
+int EnemyAtackcount;
 int mutekicount = 0.0;
 int map1count = 0.0;
 int tamacount = 0.0;
 int leftcount = 1;
 int rightcount = 0;
 int bootscount;
+int portioncount;
 int Redstcount;
 int windowcount;
+int EnemyAtackkazu = 0;
 
 
 int enemyHP = 100;
@@ -537,7 +557,7 @@ BOOL MojiDraw2 = FALSE;
 int warphandle[10];
 int y_warphandle[10];
 int b_warphandle[10];
-//テスト
+
 int enecolor[4];
 int enecolor2[4];
 int enecolor3[4];
@@ -549,6 +569,7 @@ int hp = 500;
 BOOL IsMuteki = FALSE;
 BOOL Ishit = TRUE;
 BOOL Sousa = TRUE;
+BOOL AitemCount = FALSE;
 BOOL IsDrawBox_y = FALSE;
 BOOL IsDrawBox_r = FALSE;
 
@@ -571,10 +592,9 @@ IMAGE_BLINK ImageEndFAIL;
 
 ENEMY enemy[BOMB_NUM];
 ENEMY enemy2[BOMB_NUM];
-ENEMY enemy3;
-//ENEMY enemy4;
+ENEMY enemy3[BOMB_NUM];
+ENEMY enemy4[BOMB_NUM];
 //ENEMY enemy5;
-//テスト
 ENEMY enemy6[BOMB_NUM];
 
 
@@ -594,6 +614,7 @@ IMAGE gategazou;
 IMAGE goalgazou;
 IMAGE y_crystal;
 IMAGE kaihuku;
+IMAGE portion;
 IMAGE gate[GATE_NUM];
 IMAGE hukidasi[HUKIDASI_NUM];
 IMAGE hukidasi2;
@@ -745,10 +766,19 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 
 	
-
+	//リロード
 	player.CanShot = TRUE;
 	player.ShotReLoadCnt = 0;
-	player.ShotReLoadCntMAX = CHARA_RELOAD_LOW;
+
+	if (AitemCount == TRUE)
+	{
+		player.ShotReLoadCntMAX = CHARA_RELOAD_HIGH;
+	}
+	else
+	{
+		player.ShotReLoadCntMAX = CHARA_RELOAD_MIDI;
+	}
+	
 
 
 	SetMouseDispFlag(TRUE);
@@ -1327,6 +1357,7 @@ VOID MY_PLAY0_PROC(VOID)
 	}
 
 
+
 	if (CheckSoundMem(BGM.handle) == 0)
 	{
 		PlaySoundMem(BGM.handle, DX_PLAYTYPE_LOOP);
@@ -1508,6 +1539,11 @@ VOID MY_PLAY0_PROC(VOID)
 	}
 
 
+	
+
+
+
+	//ハートが全てなくなったらゲームオーバー
 	if (heartnow == FALSE)
 	{
 		if (CheckSoundMem(BGM.handle) != 0)
@@ -1541,6 +1577,10 @@ VOID MY_PLAY0_PROC(VOID)
 
 		return;
 	}
+
+
+
+	
 
 
 	//赤弾を発射
@@ -2146,6 +2186,8 @@ VOID MY_PLAY0_PROC(VOID)
 	}
 
 
+	
+
 
 	//ステージ構成
 
@@ -2183,6 +2225,7 @@ VOID MY_PLAY0_PROC(VOID)
 		{
 			if (MY_KEY_DOWN(KEY_INPUT_RETURN) == TRUE)
 			{
+				PlaySoundMem(ENTER.handle, DX_PLAYTYPE_BACK);
 				st0count += 1;
 				windowcount = 0;
 				EnterDraw = FALSE;
@@ -2208,6 +2251,7 @@ VOID MY_PLAY0_PROC(VOID)
 		{
 			if (MY_KEY_DOWN(KEY_INPUT_RETURN) == TRUE)
 			{
+				PlaySoundMem(ENTER.handle, DX_PLAYTYPE_BACK);
 				st0count += 1;
 				windowcount = 0;
 				EnterDraw = FALSE;
@@ -2232,6 +2276,7 @@ VOID MY_PLAY0_PROC(VOID)
 		{
 			if (MY_KEY_DOWN(KEY_INPUT_RETURN) == TRUE)
 			{
+				PlaySoundMem(ENTER.handle, DX_PLAYTYPE_BACK);
 				FirstStIn = TRUE;
 				setumei3 = FALSE;
 				hukidasi2.IsDraw = FALSE;
@@ -2409,9 +2454,10 @@ VOID MY_PLAY0_DRAW(VOID)
 		}
 	}
 
-
+	//テスト用
 	DrawFormatString(600, 0, GetColor(255, 255, 255), "count:%d", st0count);
 	DrawFormatString(600, 20, GetColor(255, 255, 255), "count:%d", windowcount);
+	/*DrawFormatString(300, 40, GetColor(255, 255, 255), "portion:%d", portioncount);*/
 
 
 	if (hukidasi2.IsDraw == TRUE)
@@ -2447,9 +2493,6 @@ VOID MY_PLAY0_DRAW(VOID)
 		DrawGraph(yajirusi.x, yajirusi.y, yajirusi.handle, TRUE);
 	}
 
-
-
-	/*DrawFormatString(600, 0, GetColor(255, 255, 255), "HP:%d",hp);*/
 	DrawString(0, 0, "A：赤弾", GetColor(255, 255, 255));
 	DrawString(0, 20, "S：緑弾", GetColor(255, 255, 255));
 	DrawString(0, 40, "D：青弾", GetColor(255, 255, 255));
@@ -2462,6 +2505,9 @@ VOID MY_PLAY0_DRAW(VOID)
 
 
 	
+	
+
+
 
 	//プレイヤー描画
 	if (MY_KEY_DOWN(KEY_INPUT_LEFT) == TRUE)
@@ -2481,7 +2527,6 @@ VOID MY_PLAY0_DRAW(VOID)
 	else
 	{
 		stopflag = TRUE;
-
 	}
 
 
@@ -2517,18 +2562,25 @@ VOID MY_PLAY0_DRAW(VOID)
 		}
 		if (MY_KEY_DOWN(KEY_INPUT_A) == TRUE)
 		{
-			muki = 2;
+			muki = 5;
+		}
+		if (MY_KEY_DOWN(KEY_INPUT_S) == TRUE)
+		{
+			muki = 5;
+		}
+		if (MY_KEY_DOWN(KEY_INPUT_D) == TRUE)
+		{
+			muki = 5;
+		}
+		if (MY_KEY_DOWN(KEY_INPUT_F) == TRUE)
+		{
+			muki = 5;
 		}
 	}
 
 
-
-
 	/*DrawFormatString(400, 0, GetColor(255, 255, 255), "leftcount:%d", leftcount);*/
 	
-	
-	
-
 
 	if (player.IsDraw == TRUE)
 	{
@@ -2538,9 +2590,7 @@ VOID MY_PLAY0_DRAW(VOID)
 	DrawBox(player.coll.left, player.coll.top, player.coll.right, player.coll.bottom, GetColor(255, 0, 0), FALSE);
 
 
-	
-
-	//テスト
+	//色変化モンスター
 
 	int color = 0;
 	int color2 = 0;
@@ -2552,16 +2602,12 @@ VOID MY_PLAY0_DRAW(VOID)
 
 		if (enemy6[kazu].image.IsDraw == TRUE)
 		{
-
-
 			DrawGraph(enemy6[0].image.x, enemy6[0].image.y, enecolor[color], TRUE);
 
 			DrawGraph(enemy6[1].image.x, enemy6[1].image.y, enecolor[color2], TRUE);
 			if (enemy2HP == 100)
 			{
-
 				color2 = 3;
-
 			}
 			if (enemy2HP == 50)
 			{
@@ -2652,13 +2698,7 @@ VOID MY_PLAY0_DRAW(VOID)
 	}
 
 
-	/*if (enemy4.image.IsDraw == TRUE)
-	{
-		DrawGraph(enemy4.image.x, enemy4.image.y, enemy4.image.handle, TRUE);
-	}
-
-
-	if (enemy5.image.IsDraw == TRUE)
+	/*if (enemy5.image.IsDraw == TRUE)
 	{
 		DrawGraph(enemy5.image.x, enemy5.image.y, enemy5.image.handle, TRUE);
 	}*/
@@ -2729,7 +2769,7 @@ VOID MY_PLAY0_DRAW(VOID)
 				player.tama[cnt].changeImageCnt = 0;
 			}
 
-			if (player.tama[cnt].x < player.CenterX - 250)
+			if (player.tama[cnt].x < player.CenterX - TAMA_HIKYORI_LONG || player.tama[cnt].x < 0)
 			{
 				player.tama[cnt].IsDraw = FALSE;
 				player.tama[cnt].y = 1000;
@@ -2780,14 +2820,14 @@ VOID MY_PLAY0_DRAW(VOID)
 				player.tama2[cnt].changeImageCnt = 0;
 			}
 
-			if (player.tama2[cnt].x < player.CenterX - 250)
+			if (player.tama2[cnt].x < player.CenterX - TAMA_HIKYORI_LONG)
 			{
 				player.tama2[cnt].IsDraw = FALSE;
 				player.tama2[cnt].y = 1000;
 			}
 			else
 			{
-				player.tama2[cnt].x -= player.tama2[cnt].speed;
+				player.tama2[cnt].x -= player.tama[cnt].speed;
 
 			}
 		}
@@ -2832,14 +2872,14 @@ VOID MY_PLAY0_DRAW(VOID)
 				player.b_tama[cnt].changeImageCnt = 0;
 			}
 
-			if (player.b_tama[cnt].x < player.CenterX - 250)
+			if (player.b_tama[cnt].x < player.CenterX - TAMA_HIKYORI_LONG)
 			{
 				player.b_tama[cnt].IsDraw = FALSE;
 				player.b_tama[cnt].y = 1000;
 			}
 			else
 			{
-				player.b_tama[cnt].x -= player.b_tama[cnt].speed;
+				player.b_tama[cnt].x -= player.tama[cnt].speed;
 
 			}
 		}
@@ -2880,14 +2920,14 @@ VOID MY_PLAY0_DRAW(VOID)
 				player.y_tama[cnt].changeImageCnt = 0;
 			}
 
-			if (player.y_tama[cnt].x < player.CenterX - 250)
+			if (player.y_tama[cnt].x < player.CenterX - TAMA_HIKYORI_LONG)
 			{
 				player.y_tama[cnt].IsDraw = FALSE;
 				player.y_tama[cnt].y = 1000;
 			}
 			else
 			{
-				player.y_tama[cnt].x -= player.y_tama[cnt].speed;
+				player.y_tama[cnt].x -= player.tama[cnt].speed;
 
 			}
 		}
@@ -3102,6 +3142,9 @@ VOID MY_PLAY_PROC(VOID)
 		kaihuku.height = 0;
 
 	}*/
+
+
+	
 
 
 
@@ -3368,9 +3411,9 @@ VOID MY_PLAY_PROC(VOID)
 			player.image.x = player.CenterX;
 			player.image.y = player.CenterY;
 
-			enemy3.image.x = -150;
+			enemy3[0].image.x = -150;
 
-			Sousa = FALSE;
+			/*Sousa = FALSE;*/
 
 			RedStIn = TRUE;
 			MirrowIn = TRUE;
@@ -4702,7 +4745,7 @@ VOID MY_PLAY2_DRAW(VOID)
 			}
 			else
 			{
-				player.tama2[cnt].x -= player.tama2[cnt].speed;
+				player.tama2[cnt].x -= player.tama[cnt].speed;
 			}
 		}
 	}
@@ -4753,7 +4796,7 @@ VOID MY_PLAY2_DRAW(VOID)
 			}
 			else
 			{
-				player.b_tama[cnt].x -= player.b_tama[cnt].speed;
+				player.b_tama[cnt].x -= player.tama[cnt].speed;
 
 			}
 		}
@@ -4801,7 +4844,7 @@ VOID MY_PLAY2_DRAW(VOID)
 			}
 			else
 			{
-				player.y_tama[cnt].x -= player.y_tama[cnt].speed;
+				player.y_tama[cnt].x -= player.tama[cnt].speed;
 
 			}
 		}
@@ -4940,6 +4983,31 @@ VOID MY_RED_PROC(VOID)
 	}
 
 
+	//当たり判定の範囲設定
+	RECT PlayerRect;
+	int CollRange = 2;
+	PlayerRect.left = player.image.x + player.image.width / 2 - CollRange;
+	PlayerRect.top = player.image.y + player.image.height / 2 - CollRange;
+	PlayerRect.right = player.image.x + player.image.width / 2 + CollRange;
+	PlayerRect.bottom = player.image.y + player.image.height / 2 + CollRange;
+
+	RECT PortionRect;
+	PortionRect.left = portion.x;
+	PortionRect.top = portion.y;
+	PortionRect.right = portion.x + portion.width;
+	PortionRect.bottom = portion.y + portion.height;
+
+
+	//ポーションとプレイヤーの接触
+	if (MY_CHECK_RECT_COLL(PlayerRect, PortionRect) == TRUE)
+	{
+		AitemCount = TRUE;
+
+		portion.IsDraw = FALSE;
+		portion.width = 0;
+		portion.height = 0;
+	}
+
 
 	//赤弾を発射
 	if (MY_KEY_DOWN(KEY_INPUT_A) == TRUE)
@@ -4956,7 +5024,7 @@ VOID MY_RED_PROC(VOID)
 				{
 					player.tama[cnt].x = player.image.x - 10;
 
-					player.tama[cnt].y = player.CenterY - 20;/* - player.tama[cnt].height*/;
+					player.tama[cnt].y = player.CenterY - 20;
 
 					player.tama[cnt].IsDraw = TRUE;
 
@@ -5067,11 +5135,60 @@ VOID MY_RED_PROC(VOID)
 	}
 
 
+	//アイテム
+	portion.x = 300;
+	portion.y = 300;
 
+
+	//アイテム効果時間
+	if (AitemCount == TRUE)
+	{
+		portioncount++;
+		player.ShotReLoadCntMAX = CHARA_RELOAD_HIGH;
+
+		if (portioncount == 300)
+		{
+			AitemCount = FALSE;
+		}
+	}
+	else
+	{
+		player.ShotReLoadCntMAX = CHARA_RELOAD_MIDI;
+	}
 
 	//ステージ構成
 
-	if (RedStIn == TRUE)
+	/*enemy3[0].image.x++;
+	enemy3[0].image.y = 100;*/
+
+	/*enemy3.image.x++;
+	enemy3.image.y = 200 + 70 * sin(enemy3.image.radian);
+	enemy3.image.radian += 0.02;*/
+
+	EnemyAtackcount++;
+
+			/*if (EnemyAtackcount == 100)
+			{
+				enemy2[6].image.x = enemy3[0].image.x + 60;
+				enemy2[6].image.y = enemy3[0].image.y + 60;
+				enemy2[6].image.IsDraw = TRUE;
+			}
+			if (EnemyAtackcount == 200)	
+			{
+				enemy2[7].image.x = enemy3[0].image.x + 60;
+				enemy2[7].image.y = enemy3[0].image.y + 60;
+				enemy2[7].image.IsDraw = TRUE;
+			}
+			if (EnemyAtackcount == 300)
+			{
+				enemy2[8].image.IsDraw = TRUE;
+			}*/
+				/*EnemyAtackkazu += 1;
+				EnemyAtackcount = 0;*/
+				
+		
+
+	/*if (RedStIn == TRUE)
 	{
 		Redstcount++;
 	}
@@ -5114,13 +5231,7 @@ VOID MY_RED_PROC(VOID)
 			{
 				enemy3.image.x -= 2;
 			}		
-		}	
-
-
-		if (enemy3.image.x == 300)
-		{
-
-		}
+		}	*/
 
 
 	return;
@@ -5146,8 +5257,10 @@ VOID MY_RED_DRAW(VOID)
 	}
 
 
-	
-	DrawFormatString(600, 0, GetColor(255, 255, 255), "count:%d", Redstcount);
+	//テスト用
+	DrawFormatString(600, 0, GetColor(255, 255, 255), "count:%d", EnemyAtackcount);
+	DrawFormatString(600, 30, GetColor(255, 255, 255), "atack:%d", EnemyAtackkazu);
+
 
 
 	//プレイヤー描画
@@ -5168,7 +5281,6 @@ VOID MY_RED_DRAW(VOID)
 	else
 	{
 		stopflag = TRUE;
-
 	}
 
 
@@ -5310,7 +5422,7 @@ VOID MY_RED_DRAW(VOID)
 			}
 			else
 			{
-				player.tama2[cnt].x -= player.tama2[cnt].speed;
+				player.tama2[cnt].x -= player.tama[cnt].speed;
 			}
 		}
 	}
@@ -5361,7 +5473,7 @@ VOID MY_RED_DRAW(VOID)
 			}
 			else
 			{
-				player.b_tama[cnt].x -= player.b_tama[cnt].speed;
+				player.b_tama[cnt].x -= player.tama[cnt].speed;
 
 			}
 		}
@@ -5409,18 +5521,63 @@ VOID MY_RED_DRAW(VOID)
 			}
 			else
 			{
-				player.y_tama[cnt].x -= player.y_tama[cnt].speed;
+				player.y_tama[cnt].x -= player.tama[cnt].speed;
 
 			}
 		}
 	}
 
 
-	if (enemy3.image.IsDraw == TRUE)
+
+
+	
+
+	for (int kazu = 0; kazu < BOMB_NUM; kazu++)
 	{
-		DrawGraph(enemy3.image.x, enemy3.image.y, enemy3.image.handle, TRUE);
+		if (enemy3[kazu].image.IsDraw == TRUE)
+		{
+			DrawGraph(enemy3[0].image.x, enemy3[0].image.y, enemy3[0].image.handle, TRUE);
+		}
 	}
 
+
+	for (int kazu = 0; kazu < BOMB_NUM; kazu++)
+	{
+
+		if (enemy2[kazu].image.IsDraw == TRUE)
+		{
+
+			DrawGraph(enemy2[6].image.x, enemy2[6].image.y, enecolor3[2], TRUE);
+			DrawGraph(enemy2[7].image.x, enemy2[7].image.y, enecolor3[0], TRUE);
+			DrawGraph(enemy2[8].image.x, enemy2[8].image.y, enecolor3[3], TRUE);
+			if (enemy2[6].image.x < 1000)
+			{
+				enemy2[6].image.x += 2;
+			}
+			else
+			{
+				enemy2[6].image.IsDraw = FALSE;
+			}
+
+			if (enemy2[7].image.x < 1000)
+			{
+				enemy2[7].image.y += 2;
+			}
+			else
+			{
+				enemy2[7].image.IsDraw = FALSE;
+			}
+			
+					
+		}
+	}
+
+
+	if (portion.IsDraw == TRUE)
+	{
+		DrawGraph(portion.x, portion.y, portion.handle, TRUE);
+	}
+	
 
 	return;
 }
@@ -5768,26 +5925,26 @@ BOOL MY_LOAD_IMAGE(VOID)
 
 
 	//魔鏡
-	strcpy_s(enemy3.image.path, IMAGE_ENEMY3_PATH);
-	enemy3.image.handle = LoadGraph(enemy3.image.path);
-	if (enemy3.image.handle == -1)
+	strcpy_s(enemy3[0].image.path, IMAGE_ENEMY3_PATH);
+	enemy3[0].image.handle = LoadGraph(enemy3[0].image.path);
+	if (enemy3[0].image.handle == -1)
 	{
 		MessageBox(GetMainWindowHandle(), IMAGE_ENEMY3_PATH, IMAGE_LOAD_ERR_TITLE, MB_OK);
 		return FALSE;
 	}
-	GetGraphSize(enemy3.image.handle, &enemy3.image.width, &enemy3.image.height);	//画像の幅と高さを取得
+	GetGraphSize(enemy3[0].image.handle, &enemy3[0].image.width, &enemy3[0].image.height);	//画像の幅と高さを取得
 
-	enemy3.radian = 0.0;
-	enemy3.speed = CHARA_SPEED_LOW;
-	enemy3.image.IsDraw = TRUE;
+	enemy3[0].radian = 0.0;
+	enemy3[0].speed = CHARA_SPEED_LOW;
+	enemy3[0].image.IsDraw = TRUE;
 
 
 
-	//strcpy_s(enemy4.image.path, IMAGE_ENEMY4_PATH);
+	//strcpy_s(enemy4.image.path, IMAGE_ENEMYFIRE_PATH);
 	//enemy4.image.handle = LoadGraph(enemy4.image.path);
 	//if (enemy4.image.handle == -1)
 	//{
-	//	MessageBox(GetMainWindowHandle(), IMAGE_ENEMY4_PATH, IMAGE_LOAD_ERR_TITLE, MB_OK);
+	//	MessageBox(GetMainWindowHandle(), IMAGE_ENEMYFIRE_PATH, IMAGE_LOAD_ERR_TITLE, MB_OK);
 	//	return FALSE;
 	//}
 	//GetGraphSize(enemy4.image.handle, &enemy4.image.width, &enemy4.image.height);	//画像の幅と高さを取得
@@ -6000,6 +6157,17 @@ BOOL MY_LOAD_IMAGE(VOID)
 	kaihuku.IsDraw = TRUE;
 
 
+	//ポーション
+	strcpy_s(portion.path, IMAGE_PORTION_PATH);
+	portion.handle = LoadGraph(portion.path);
+	if (portion.handle == -1)
+	{
+		MessageBox(GetMainWindowHandle(), IMAGE_PORTION_PATH, IMAGE_LOAD_ERR_TITLE, MB_OK);
+		return FALSE;
+	}
+	GetGraphSize(portion.handle, &portion.width, &portion.height);
+	portion.IsDraw = TRUE;
+
 
 	//ゲート
 	strcpy_s(gate[0].path, IMAGE_GATE_PATH);
@@ -6089,7 +6257,7 @@ BOOL MY_LOAD_IMAGE(VOID)
 
 		player.tama[cnt].nowImageKind = 0;
 
-		player.tama[cnt].speed = CHARA_SPEED_LOW;
+		player.tama[cnt].speed = 4;
 
 	}
 
@@ -6341,7 +6509,6 @@ VOID MY_DELETE_IMAGE(VOID)
 	/*DeleteGraph(enemy.image.handle);
 	DeleteGraph(enemy2.image.handle);*/
 
-	DeleteGraph(enemy3.image.handle);
 	/*DeleteGraph(enemy4.image.handle);
 	DeleteGraph(enemy5.image.handle);*/
 	DeleteGraph(goalgazou.handle);
@@ -6357,6 +6524,7 @@ VOID MY_DELETE_IMAGE(VOID)
 	DeleteGraph(warp.handle);
 	DeleteGraph(y_crystal.handle);
 	DeleteGraph(kaihuku.handle);
+	DeleteGraph(portion.handle);
 	
 
 	for (int i = 0; i < GATE_NUM; i++)
@@ -6388,6 +6556,12 @@ VOID MY_DELETE_IMAGE(VOID)
 	for (int i = 0; i < HEART_NUM; i++)
 	{
 		DeleteGraph(heart[i].handle);
+	}
+
+
+	for (int i = 0; i < BOMB_NUM; i++)
+	{
+		DeleteGraph(enemy3[i].image.handle);
 	}
 
 
