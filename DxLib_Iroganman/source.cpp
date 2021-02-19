@@ -1520,7 +1520,7 @@ VOID MY_PLAY0_PROC(VOID)
 	{
 		if (player.CanShot == TRUE)
 		{
-			PlaySoundMem(player.musicShot.handle, DX_PLAYTYPE_BACK);
+			PlaySoundMem(player.greenshot.handle, DX_PLAYTYPE_BACK);
 			player.CanShot = FALSE;
 
 
@@ -3919,7 +3919,7 @@ VOID MY_PLAY2_PROC(VOID)
 	{
 		if (player.CanShot == TRUE)
 		{
-			PlaySoundMem(player.musicShot.handle, DX_PLAYTYPE_BACK);
+			PlaySoundMem(player.greenshot.handle, DX_PLAYTYPE_BACK);
 			player.CanShot = FALSE;
 
 
